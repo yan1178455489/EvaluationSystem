@@ -1,0 +1,6 @@
+gSize=5
+topN=5
+neighborNum=4
+gStrategy=AVG
+
+results=results.txt

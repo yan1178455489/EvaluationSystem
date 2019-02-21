@@ -1,0 +1,39 @@
+{layout name="layout" /}
+<!-- 内容 -->
+<div class="col-md-10">
+
+	<!-- 面版 -->
+	<div class="panel panel-default">
+		<ol class="breadcrumb">
+			<b>配置文件参数设置</b>
+		</ol>
+		<form action="{:url('user/run')}" method="post" >
+			<div align="left">
+				<input type="hidden" name="alg" value="{$alg}" />
+				<input type="hidden" name="dataset" value="{$dataset}" />
+				<input type="hidden" name="username" value="{$Think.session.user.username}" />
+				<textarea name="config" style="width:400px;height:250px;">{$config}</textarea>
+				<!-- topn: <input type="text" name="topn" value="10"> -->
+				<br />
+				<br />
+			</div>
+			<ol class="breadcrumb">
+				<b>评价指标选择(如果不需要计算请忽略)</b>
+			</ol>
+			<input type="checkbox" checked="checked" name="indicator[]" value="precisions" />
+			Precision
+			<input type="checkbox" checked="checked" name="indicator[]" value="recall" />
+			Recall
+			<input type="checkbox" checked="checked" name="indicator[]" value="nDCG" />
+			nDCG
+			<input type="checkbox" checked="checked" name="indicator[]" value="coverage" />
+			Coverage
+			<input type="checkbox" checked="checked" name="indicator[]" value="runtime" />
+			运行时间
+
+			<br />
+			<br />
+			<input type="submit" value="确定" class="btn btn-success">
+		</form>
+	</div>
+</div>

@@ -1,0 +1,82 @@
+{layout name="layout" /}
+<!-- 内容 -->
+<div class="col-md-10">
+
+	<!-- 面版 -->
+	<div class="panel panel-default">
+		<h1>PHP Ajax ECahrts 测试</h1>
+    <hr>
+    <div id="container" style="width: 600px; height: 400px;"></div>
+    <script src="__ADMINS__/bs/js/echarts.js"></script>
+    <script src="__ADMINS__/bs/js/jquery.min.js"></script>
+    <script>
+
+    // 初始化两个数组，盛装从数据库中获取到的数据
+    var xname = "{$xname}";
+    var yname = "{$yname}";
+    var xdata = [], ydata = [];
+
+    //调用ajax来实现异步的加载数据
+    function getusers() {
+        $.ajax({
+            type: "post",
+            async: true,
+            url: "/getrecord.php",
+            data: {},
+            dataType: "json",
+            success: function(result){
+                if(result){
+                    for(var i = 0 ; i < result.length; i++){
+                        xdata.push(result[i].topn);
+                        ydata.push(result[i].runtime);
+                    }
+                }
+            },
+            error: function(errmsg) {
+                alert("Ajax获取服务器数据出错了！"+ errmsg);
+            }
+        });
+    return xdata, ydata;
+    }
+
+    // 执行异步请求
+    getusers();
+
+
+    // 初始化 图表对象
+        var mychart = echarts.init(document.getElementById("container"));
+        // 进行相关项的设置，也就是所谓的搭搭骨架，方便待会的ajax异步的数据填充
+        var option = {
+            title : {
+                text : '实验结果柱状图'
+            },
+            tooltip : {
+                show : true
+            },
+            legend : {
+                data : [ yname ]
+            },
+            xAxis : [ {
+                data : xdata
+            } ],
+            yAxis : [ {
+                type : 'value'
+            } ],
+            series : [ {
+                "name" : yname,
+                "type" : "bar",
+                "data" : ydata
+            } ]
+        };
+
+        // 将配置项赋给chart对象，来显示相关的数据
+        mychart.setOption(option);
+        function realtime(){  
+            location.reload();  
+            console.log("realtime");  
+        }  
+        setInterval("realtime()",600000);
+    </script>
+	<marquee>确认可以到达这里啊</marquee>
+	</div>
+</div>

@@ -1,0 +1,13 @@
+K=50
+alpha=0.05
+lambda=0.01
+topn=10
+
+train=Doubanevent/train.csv
+test=Doubanevent/test.csv
+event=Doubanevent/events.csv
+userorg=Doubanevent/userorg.csv
+user_map=Doubanevent/user_map.csv
+event_map=Doubanevent/event_map.csv
+org_map=Doubanevent/org_map.csv
+results=results.csv

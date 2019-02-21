@@ -1,0 +1,9 @@
+K=50
+gamma=0.5
+beta=0.1
+rho=0.01
+eta=0.01
+gSize=5
+topN=5
+
+results=results.txt

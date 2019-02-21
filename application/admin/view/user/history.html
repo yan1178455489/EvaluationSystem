@@ -1,0 +1,161 @@
+{layout name="layout" /}
+<!-- 内容 -->
+<div class="col-md-10">
+	
+	<ol class="breadcrumb">
+		<li class="active"><b>历史实验记录</b></li>
+	</ol>
+
+	<!-- 面版 -->
+	<div class="panel panel-default">
+	<div class="panel-heading">
+		<!-- <p class="pull-right tots" >共有 n 条数据</p> -->
+			<form action="{:url('user/search')}" class="form-inline pull-left" method="post">
+				<select name="sel">
+				  <option value="topn">topn</option>
+				  <option value="K">K</option>
+				  <option value="gsize">群组规模</option>
+				  <option value="algorithm">算法名称</option>
+				</select>
+				<div class="form-group">
+					<input type="text" name="search" class="form-control" placeholder="请输入你要搜索的内容" id="">
+				</div>
+				
+				<input type="submit" value="搜索" class="btn btn-success">
+			</form>
+	</div>
+	<div class="panel-body">
+		<table class="table-striped" border="1" width="928px" align="center" cellpadding="0" cellspacing="0">
+			<thead title="点击排序">
+				<tr>
+					<th>删除记录</th>
+					<th>用户名</th>
+					<th>操作时间</th>
+					<th>算法名</th>
+					<th>数据集名</th>
+					<th>运行时间(ms)</th>
+					<th>Precision</th>
+					<th>Recall</th>
+					<th>nDCG</th>
+					<th>Coverage</th>
+					<th>Novelty</th>
+					<th>topN</th>
+					<th>群组规模</th>
+					<th>融合策略</th>
+					<th>最近邻数</th>
+					<th>K</th>
+					<th>alpha</th>
+					<th>lambda</th>
+					<th>gamma</th>
+					<th>beta</th>
+					<th>rho</th>
+					<th>eta</th>
+				</tr>
+			</thead>
+			<tbody>
+			{volist name='data' id='value'}
+				<tr id="{$value.id}">
+					<td class="remove"><a class="red" onclick="deletes({$value.id})" title="删除"><span class="glyphicon glyphicon-trash"></span></a></td>
+					<td>{$value.username}</td>
+					<td>{$value.createdat}</td>
+					<td>{$value.algorithm}</td>
+					<td>{$value.dataset}</td>
+					<td>{$value.runtime}</td>
+					<td>{$value.precisions}</td>
+					<td>{$value.recall}</td>
+					<td>{$value.nDCG}</td>
+					<td>{$value.coverage}</td>
+					<td>{$value.novelty}</td>
+					<td>{$value.topN}</td>
+					<td>{$value.gSize}</td>
+					<td>{$value.gStrategy}</td>
+					<td>{$value.neighborNum}</td>
+					<td>{$value.K}</td>
+					<td>{$value.alpha}</td>
+					<td>{$value.lambda}</td>
+					<td>{$value.gamma}</td>
+					<td>{$value.beta}</td>
+					<td>{$value.rho}</td>
+					<td>{$value.eta}</td>
+				</tr>
+			{/volist}
+			</tbody>
+		</table>
+	</div>
+		{$data->render()}
+	</div>
+</div>
+<script type="text/javascript">
+	function deletes(id){
+		if(confirm("确定要删除吗？")){
+			window.event.returnValue = true;
+		}else{
+			window.event.returnValue = false;
+		}
+
+		if(window.event.returnValue == true){
+			$.ajax({
+				url:'delete',
+				success:success,
+				error:error,
+				data:{ids:id},
+				type:'POST',
+				dataType:'text',
+			});
+		}
+	}
+
+	function success(id){
+		$('#'+id).remove();
+	}
+	function error(){
+		alert('删除失败！');
+	}
+
+	function makeSortable(table) {
+	    var headers=table.getElementsByTagName("th");
+	    for(var i=0;i<headers.length;i++){
+	        (function(n){
+	            var flag=false;
+	            headers[n].onclick=function(){
+	                // sortrows(table,n);
+	                var tbody=table.tBodies[0];//第一个<tbody>
+	                var rows=tbody.getElementsByTagName("tr");//tbody中的所有行
+	                rows=Array.prototype.slice.call(rows,0);//真实数组中的快照
+
+	                //基于第n个<td>元素的值对行排序
+	                rows.sort(function(row1,row2){
+	                    var cell1=row1.getElementsByTagName("td")[n];//获得第n个单元格
+	                    var cell2=row2.getElementsByTagName("td")[n];
+	                    var val1=cell1.textContent||cell1.innerText;//获得文本内容
+	                    var val2=cell2.textContent||cell2.innerText;
+
+	                    if(val1<val2){
+	                        return -1;
+	                    }else if(val1>val2){
+	                        return 1;
+	                    }else{
+	                        return 0;
+	                    }
+	                });
+	                if(flag){
+	                    rows.reverse();
+	                }
+	                //在tbody中按它们的顺序把行添加到最后
+	                //这将自动把它们从当前位置移走，故没必要预先删除它们
+	                //如果<tbody>还包含了除了<tr>的任何其他元素，这些节点将会悬浮到顶部位置
+	                for(var i=0;i<rows.length;i++){
+	                    tbody.appendChild(rows[i]);
+	                }
+
+	                flag=!flag;
+	            }
+	        }(i));
+	    }
+	}
+
+	window.onload=function(){
+	    var table=document.getElementsByTagName("table")[0];
+	    makeSortable(table);
+	}
+</script>

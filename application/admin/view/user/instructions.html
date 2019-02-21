@@ -1,0 +1,49 @@
+{layout name="layout" /}
+<!-- 内容 -->
+<div class="col-md-10">
+
+    <!-- 面版 -->
+    <div class="panel panel-default">
+        <ol class="breadcrumb">
+            <b>系统使用说明</b>
+        </ol>
+        <pre>
+1.上传算法的规则
+a)上传时需要上传2个文件，一个可执行的算法文件,一个.txt类型的参数配置文件，这两个文件的名称都应该为算法名(例如：glfm.jar和
+glfm.txt)。
+
+b)算法所有需要的参数采用驼峰命名法，文件名参数命名没有规定，参数及其默认值需要在参数配置文件中的格式如下
+K=50
+alpha=0.05
+lambda=0.01
+topN=10
+
+train=Doubanevent/train.csv
+test=Doubanevent/test.csv
+event=Doubanevent/events.csv
+userorg=Doubanevent/userorg.csv
+user_map=Doubanevent/user_map.csv
+event_map=Doubanevent/event_map.csv
+org_map=Doubanevent/org_map.csv
+results=results.csv
+算法参数和文件名参数之间需要空一行，算法参数在前。
+
+c)上传算法时需要选择是否需要系统来计算评价指标。如果需要，算法需要生成csv输出文件，输出文件的格式为用户ID及其推荐列表(用户ID和项目ID必须和算
+法的输入一致)；如果不需要，算法输出文件需要给出评价指标，格式为：
+precisions=0.239200
+recall=0.819740
+nDCG=0.6624033327302851
+注意需要在precision后面加s，因为precision是sql语句的关键字，算法的输出文件名需要在参数配置文件中以”results=结果文件名”的格式写上。
+
+d)算法的数据集文件路径统一为：数据集名/数据文件名(例如：Doubanevent/test.csv)
+
+2.用户可以通过点击左侧算法类别栏中的算法来对选中的算法查看其信息以及运行该算法，还可以点击算法信息页面中的删除按钮来删除该算法，算法的所需要的
+参数以文本段的形式给出，自带默认值，用户可以在文本段中修改参数。
+
+3.设置完评价指标后即可点击运行该算法，运行完成后，系统会自动计算选择的评价指标。
+
+4.用户可以通过点击左侧的查看历史记录来查看实验历史记录，每条记录都可以根据需要删除，点击任意表头可以按照该字段对实验记录排序，选择相应的横纵坐
+标后还可以生成实验结果柱状图。
+        </pre>
+    </div>
+</div>

@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>推荐算法实验系统</title>
+	<link rel="shortcut icon" href="__ADMINS__/img/1.png">
+	<link rel="stylesheet" href="__ADMINS__/bs/css/bootstrap.min.css">
+	<script src="__ADMINS__/bs/js/jquery.min.js"></script>
+	<script src="__ADMINS__/bs/js/bootstrap.min.js"></script>
+	<style>
+		.navbar-blue{
+			background-color: #ccc;
+		}
+
+		.navbar .navbar-brand{
+			color:black;
+		}
+
+		.navbar .navbar-brand:hover{
+			color:black;
+		}
+
+		.navbar-default .navbar-nav>li>a{
+			color:black;
+		}
+		.navbar-default .navbar-nav>li>a:hover{
+			color:black;
+
+		}
+		
+		.body{
+			margin-top:90px;
+		}
+		.list-group{
+			display:none;
+		}
+		.panel-primary>.panel-heading{
+			background-color: #ccc;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<!-- 导航条 -->
+		<nav class="navbar navbar-default navbar-fixed-top navbar-blue" role="navigation">
+			<div class="container-fluid">
+			<!-- 导航logo -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="{:url('Index/homepage')}"><img style="display:inline" width="30px" src="__ADMINS__/img/1.png" alt="">   推荐算法实验系统</a>
+				</div>
+
+			<!-- 出logo以外 -->
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+						欢迎您！{$Think.session.user.username}
+						</li>
+						<li class="dropdown">
+						  <a href="#" class="dropdown-toggle" data-toggle="dropdown">后台管理<span class="caret"></span></a>
+						  <ul class="dropdown-menu" role="menu">
+						    <li><a href="#" data-toggle="modal" data-target="#editPass">修改密码</a></li>
+						    <li><a href="{:url('Index/logout')}">退出登录</a></li>
+						  </ul>
+						</li>
+					</ul>
+				</div><!-- /.navbar-collapse -->
+			</div><!-- /.container-fluid -->
+		</nav>
+
+		<?php 
+		use think\Db;
+
+		$event=Db::table('algorithm')->where('algtype','活动')->select();
+		$general=Db::table('algorithm')->where('algtype','通用')->select();
+		$news=Db::table('algorithm')->where('algtype','新闻')->select();
+		$poi=Db::table('algorithm')->where('algtype','POI')->select();
+		$group=Db::table('algorithm')->where('algtype','群组')->select();
+		 ?>
+		<!-- 内容区域 -->
+		<div class="row body">
+
+			<!-- 菜单 -->
+			<div class="col-md-2">
+
+			
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h2 class="panel-title"><span class="glyphicon glyphicon-tasks"></span> 通用推荐</h2>
+					</div>
+					<ul class="list-group">
+						{volist name='general' id='value'}
+					    <li class="list-group-item"><a href="{:url('user/dataset')}?id={$value.algname}">{$value.algname}算法</a></li> 	
+					    {/volist}
+					</ul>
+				</div>
+			
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h2 class="panel-title"><span class="glyphicon glyphicon-tasks"></span> 新闻推荐</h2>
+					</div>
+					<ul class="list-group">
+						{volist name='news' id='value'}
+					    <li class="list-group-item"><a href="{:url('user/dataset')}?id={$value.algname}">{$value.algname}算法</a></li> 	
+					    {/volist}
+					</ul>
+				</div>
+			
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h2 class="panel-title"><span class="glyphicon glyphicon-tasks"></span> POI推荐</h2>
+					</div>
+					<ul class="list-group">
+						{volist name='poi' id='value'}
+					    <li class="list-group-item"><a href="{:url('user/dataset')}?id={$value.algname}">{$value.algname}算法</a></li> 	
+					    {/volist}
+					</ul>
+				</div>
+			
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h2 class="panel-title"><span class="glyphicon glyphicon-tasks"></span> 群组推荐</h2>
+					</div>
+					<ul class="list-group">
+						{volist name='group' id='value'}
+					    <li class="list-group-item"><a href="{:url('user/dataset')}?id={$value.algname}">{$value.algname}算法</a></li> 	
+					    {/volist}
+					</ul>
+				</div>
+				
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h2 class="panel-title"><span class="glyphicon glyphicon-tasks"></span> 活动推荐</h2>
+					</div>
+					<ul class="list-group">
+						{volist name='event' id='value'}
+					    <li class="list-group-item"><a href="{:url('user/dataset')}?id={$value.algname}">{$value.algname}算法</a></li> 	
+					    {/volist}
+					</ul>
+				</div>
+
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h2 class="panel-title"><span class="glyphicon glyphicon-plus"></span> <a href="{:url('user/add')}">上传推荐算法</a></h2>
+					</div>
+				</div>
+				<!-- 历史记录 -->
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h2 class="panel-title"><span class="glyphicon glyphicon-list-alt"></span> <a href="{:url('user/history')}">查看历史记录</a></h2>
+					</div>
+				</div>
+				<!-- 使用说明 -->
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h2 class="panel-title"><span class="glyphicon glyphicon-list-alt"></span> <a href="{:url('user/instructions')}">使用说明</a></h2>
+					</div>
+				</div>
+				<!-- 评论管理 -->
+				<!-- <div class="panel panel-primary">
+					<div class="panel-heading">
+						<h2 class="panel-title"><span class="glyphicon glyphicon-envelope"></span> 评论管理</h2>
+					</div>
+					<ul class="list-group">
+					    <li class="list-group-item"><a href="">评论列表</a></li>	
+					</ul>
+				</div>
+
+				<!-- 系统管理 -->
+				<!-- <div class="panel panel-primary">
+					<div class="panel-heading">
+						<h2 class="panel-title"><span class="glyphicon glyphicon-certificate"></span> 系统管理</h2>
+					</div>
+					<ul class="list-group">
+					    <li class="list-group-item"><a href="">系统配置</a></li>
+					    <li class="list-group-item"><a href="">轮播图管理</a></li>
+					    <li class="list-group-item"><a href="">广告管理</a></li>
+					 	
+					</ul>
+				</div> -->
+			</div>
+
+			{__CONTENT__}
+		</div>
+	</div>
+
+
+	<!-- 修改密码的摸态框 -->
+	<div class="modal fade" id="editPass">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">修改密码</h4>
+				</div>
+				<div class="modal-body">
+					<form action="">
+						<div class="form-group">
+							<label for="">原密码</label>
+							<input type="password" name="ori" class="form-control" placeholder="请输入原密码" id="ori">
+						</div>
+						<div class="form-group">
+							<label for="">新密码</label>
+							<input type="password" name="new" class="form-control" placeholder="请输入新密码" id="new">
+						</div>
+						<div class="form-group">
+							<label for="">确认密码</label>
+							<input type="password" name="sure" class="form-control" placeholder="请再次输入密码" id="sure">
+						</div>
+						<div class="form-group pull-right">
+							<input type="submit" value="提交" class="btn btn-success">
+							<input type="reset" value="重置" class="btn btn-danger">
+						</div>
+
+						<div style="clear:both"></div>
+					</form>
+				</div>
+				
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+</body>
+<script>
+	// 菜单切换
+	$(".panel-title").click(function(){
+		$(".list-group").hide();
+		$(this).parent().next().toggle(500);
+	});
+	
+</script>
+</html>

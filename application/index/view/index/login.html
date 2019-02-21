@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<style type="text/css">
+ form{
+    width:300px;
+    background-color:#EEE0E5;
+    margin-left:300px;
+    margin-top:30px;
+    padding:30px;
+ }
+</style>
+<head>
+	<title>用户登录</title>
+</head>
+<body>
+	<form action="{:url('index/login')}" method="post">
+		<label>username:<input type="text" name="name"></label>
+		<br/><br/>
+		<label>password:<input type="password" name="pw"></label>
+		<br/><br/>
+		<button type="submit" name="submit">login</button>
+		<!-- <input type="button" onclick="javascript:window.location.href='index/index/regi'" value="注册"></button> -->
+	</form>
+
+	
+</body>
+</html>
+
+

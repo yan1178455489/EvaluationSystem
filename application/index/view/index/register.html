@@ -1,0 +1,20 @@
+<style type="text/css">
+ form{
+    width:300px;
+    background-color:#EEE0E5;
+    margin-left:300px;
+    margin-top:30px;
+    padding:30px;
+ }
+ button{
+    margin-top:20px;
+ }
+</style>
+<form action="{:url('index/index/register')}" method="post">
+<label>username:<input type="text" name="name"></label>
+<br/><br/>
+<label>password:<input type="password" name="pw"></label>
+<br/><br/>
+<label>password:<input type="password" name="repw"></label>
+<button type="submit" name="submit">register</button>
+</form>
