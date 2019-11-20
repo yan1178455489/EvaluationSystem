@@ -8,12 +8,11 @@ use think\Controller;
 use think\Db;
 use think\Upload;
 use think\Paginator;
+
 class User extends Controller{
 
 	// 选择数据集方法
-
 	public function dataset(){
-		
 		return $this->fetch();
 	}
 	// 把算法信息插入数据库
@@ -29,7 +28,7 @@ class User extends Controller{
 
 		$alg_file = request()->file('alg');
 		$config = request()->file('config');
-	        // 移动到框架应用根目录/public/ 目录下
+	    // 移动到框架应用根目录/public/ 目录下
 		$string = strrev($_FILES['alg']['name']);
         $array = explode('.',$string);
         $array[0] = strrev($array[0]);
@@ -106,7 +105,7 @@ class User extends Controller{
 		$file_type = $alg['filetype'];
 		$selects = $_POST['indicator'];
 
-		if($need_computed==1){
+		if($need_computed == 1){
 			$config = fopen($_POST['alg'].".txt", "w");
 			fwrite($config,$_POST['config']);
 			fclose($config);
@@ -130,6 +129,7 @@ class User extends Controller{
 
 			$config = fopen($_POST['alg'].".txt", "r");
 			$line = fgets($config);
+			//读取输入参数
 			while (strlen($line)>2) {
 				list($key,$value) = explode("=", $line);
 				$len=strlen($value);
@@ -139,6 +139,7 @@ class User extends Controller{
 				$para[$key]=$value;
 				$line = fgets($config);
 			}
+			//读取输入输出文件
 			while(!feof($config)){
 				$line = fgets($config);
 				list($key,$value) = explode("=", $line);
@@ -150,25 +151,43 @@ class User extends Controller{
 			}
 			fclose($config);
 
-			$user_map_file = fopen($datafile['user_map'], "r");
-			while($line = fgetcsv($user_map_file)){
-				$user_map[$line[1]]=$line[0];
-			}
-			fclose($user_map_file);
-
-			$event_map_file = fopen($datafile['event_map'], "r");
-			while($line = fgetcsv($event_map_file)){
-				$event_map[$line[1]]=$line[0];
-			}
-			fclose($event_map_file);
-
 			$test_file = fopen($datafile['test'], "r");
-			while($line = fgetcsv($test_file)){
-				$test[$user_map[$line[0]]][]=$event_map[$line[1]];
-			}
-			fclose($test_file);
+			$i_num = 0;
+			$test = array();
+			if (array_key_exists('user_map', $datafile)) {
+				$user_map_file = fopen($datafile['user_map'], "r");
+				while($line = fgetcsv($user_map_file)){
+					$user_map[$line[1]]=$line[0];
+				}
+				fclose($user_map_file);
 
-			
+				$event_map_file = fopen($datafile['event_map'], "r");
+				while($line = fgetcsv($event_map_file)){
+					$event_map[$line[1]]=$line[0];
+				}
+				fclose($event_map_file);
+				$i_num = count($event_map);
+				while($line = fgetcsv($test_file)){
+					$test[$user_map[$line[0]]][]=$event_map[$line[1]];
+				}
+				
+			} else {
+				if (strpos($datafile['test'],'csv') !== false) {
+					while($line = fgetcsv($test_file)){
+						$test[$line[0]][]=$line[1];
+						$i_num = max($i_num, intval($line[1]));
+					}
+				} else {
+					while (!feof($test_file)) {
+						$line = fgets($test_file);
+						list($uid, $eid) = explode(",", $line);
+						$test[$uid][]=$eid;
+						$i_num = max($i_num, intval($eid));
+					}
+				}
+				
+			}	
+			fclose($test_file);
 
 			$results_file = fopen($datafile['results'], "r");
 
@@ -191,7 +210,6 @@ class User extends Controller{
 						$DCG += log(2,$i+1);
 					}
 				}
-
 				$Precision += (int)$para['topn'];
 				$Recall += count($test[$line[0]]);
 				
@@ -199,7 +217,7 @@ class User extends Controller{
 			$Precision = $hits/$Precision;
 			$Recall = $hits/$Recall;
 			$nDCG = $DCG/($iDCG * count($test));
-			$Coverage = count($items)/count($event_map);
+			$Coverage = count($items)/$i_num;
 			
 			fclose($results_file);
 			$data=['username'=>$_POST['username'],'createdat'=>date("Y-m-d H:i:s",time()),'algorithm'=>$_POST['alg'],'dataset'=>$_POST['dataset'],'precisions'=>$Precision,'recall'=>$Recall,'nDCG'=>$nDCG,'coverage'=>$Coverage,'runtime'=>$runtime];

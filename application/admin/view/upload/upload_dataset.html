@@ -1,0 +1,29 @@
+{layout name="layout" /}
+<!-- 内容 -->
+<div class="col-md-10">
+	
+	<ol class="breadcrumb">
+		<li class="active">上传数据集</li>
+
+	</ol>
+
+	<!-- 面版 -->
+	<div class="panel panel-default">
+		
+		<div class="panel-body">
+			<form action="{:url('admin/upload/do_upload_dataset')}" enctype="multipart/form-data" method="post">
+
+				<div class="form-group">
+					数据集压缩包：<input type="file" name="dataset">	
+				</div>
+
+				<div class="form-group">
+					<input type="submit" value="提交" class="btn btn-success">
+					<input type="reset" value="重置" class="btn btn-danger">
+				</div>
+
+			</form>
+		</div>
+		
+	</div>
+</div>
