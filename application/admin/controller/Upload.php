@@ -55,6 +55,7 @@ class Upload extends Controller
 	}
 
 	public function do_upload_dataset(){
+		// 移动到框架应用根目录/public/ 目录下
 		$data_file = request()->file('dataset');
 		$info = $data_file->move('./','');  
 		$file_name = $_FILES['dataset']['name'];

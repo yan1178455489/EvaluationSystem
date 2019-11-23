@@ -40,6 +40,7 @@ class User extends Controller{
 			'reference'=>$_POST['reference'],
 			'dataset'=>$_POST['dataset'],
 			'algtype'=>$_POST['algtype'],
+			'need_computed'=>$_POST['need_computed'],
 			'filetype'=>$array[0]
 		);
 		Db::table('algorithm')->insert($data);
@@ -102,6 +103,7 @@ class User extends Controller{
 	public function run(){
 		$alg = Db::table('algorithm')->where('algname',$_POST['alg'])->find();
 		$need_computed = (int)$alg['need_computed'];
+		$dataset = $_POST['dataset'];
 		$file_type = $alg['filetype'];
 		$selects = $_POST['indicator'];
 
@@ -133,9 +135,7 @@ class User extends Controller{
 			while (strlen($line)>2) {
 				list($key,$value) = explode("=", $line);
 				$len=strlen($value);
-				if(strrpos($value, "\n")){
-					$value = substr($value, 0, $len-2);
-				}
+				$value = str_replace(PHP_EOL, '', $value);
 				$para[$key]=$value;
 				$line = fgets($config);
 			}
@@ -144,16 +144,18 @@ class User extends Controller{
 				$line = fgets($config);
 				list($key,$value) = explode("=", $line);
 				$len=strlen($value);
-				if(strrpos($value, "\n")){
-					$value = substr($value, 0, $len-2);
-				}
+				$value = str_replace(PHP_EOL, '', $value);
 				$datafile[$key] = $value;
 			}
 			fclose($config);
 
-			$test_file = fopen($datafile['test'], "r");
+			$test_file = fopen($dataset."/".$datafile['test'], "r");
 			$i_num = 0;
 			$test = array();
+			$participate_num = array();
+			while($line = fgetcsv($test_file)){
+				$participate_num[$line[1]] = 0;
+			}
 			if (array_key_exists('user_map', $datafile)) {
 				$user_map_file = fopen($datafile['user_map'], "r");
 				while($line = fgetcsv($user_map_file)){
@@ -169,23 +171,24 @@ class User extends Controller{
 				$i_num = count($event_map);
 				while($line = fgetcsv($test_file)){
 					$test[$user_map[$line[0]]][]=$event_map[$line[1]];
+					$participate_num[$line[1]]++;
 				}
-				
 			} else {
 				if (strpos($datafile['test'],'csv') !== false) {
 					while($line = fgetcsv($test_file)){
 						$test[$line[0]][]=$line[1];
+						$participate_num[$line[1]]++;
 						$i_num = max($i_num, intval($line[1]));
 					}
 				} else {
 					while (!feof($test_file)) {
 						$line = fgets($test_file);
-						list($uid, $eid) = explode(",", $line);
+						list($uid, $eid) = explode("\t", $line);
 						$test[$uid][]=$eid;
+						$participate_num[$eid]++;
 						$i_num = max($i_num, intval($eid));
 					}
 				}
-				
 			}	
 			fclose($test_file);
 
@@ -197,14 +200,36 @@ class User extends Controller{
 			$nDCG = 0;
 			$iDCG = 0;
 			$DCG = 0;
-
-			for ($i=1; $i <=(int)$para['topn'] ; $i++) { 
-					$iDCG += log(2,$i+1);
-			}
+			$Novelty = 0;
+			$Diversity = 0;
+			$recommend_list = array();
+			$u_num = 0;
 			while($line = fgetcsv($results_file)){
-				
+				for ($i=1; $i <=(int)$para['topn'] ; $i++) {	
+        			$recommend_list[$u_num][] = $line[$i];
+        		}
+        		$u_num++;
+			}
+			// 计算用户间多样性
+			for ($i=0; $i < $u_num; $i++) { 
+				for ($j=$i+1; $j < $u_num ; $j++) { 
+					$common_list = array_intersect($recommend_list[$i], $recommend_list[$j]);
+					$Diversity += 1 - count($common_list)/$para['topn'];					
+				}
+			}
+			$Diversity /= ($u_num*($u_num-1))/2;
+			for ($i=1; $i <=(int)$para['topn'] ; $i++) { 
+				$iDCG += log(2,$i+1);
+			}
+			$max_k = 0;
+			foreach ($participate_num as $key => $value) {
+				$max_k = max($max_k, $value);
+			}
+			while($line = fgetcsv($results_file)){	
 				for ($i=1; $i <=(int)$para['topn'] ; $i++) {
-					$items["$line[$i]"]=1; 
+					$eid = $line[$i];
+					$items[$eid]=1; 
+					$Novelty += log(2,(1+$max_k)/(1+$participate_num[$eid]))/log(2,$i+1);
 					if(in_array($line[$i], $test[$line[0]])){
 						$hits++;
 						$DCG += log(2,$i+1);
@@ -212,15 +237,15 @@ class User extends Controller{
 				}
 				$Precision += (int)$para['topn'];
 				$Recall += count($test[$line[0]]);
-				
 			}
+			$Novelty = $Novelty/$u_num/$para['topn'];
 			$Precision = $hits/$Precision;
 			$Recall = $hits/$Recall;
-			$nDCG = $DCG/($iDCG * count($test));
+			$nDCG = $DCG/($iDCG * $u_num);
 			$Coverage = count($items)/$i_num;
 			
 			fclose($results_file);
-			$data=['username'=>$_POST['username'],'createdat'=>date("Y-m-d H:i:s",time()),'algorithm'=>$_POST['alg'],'dataset'=>$_POST['dataset'],'precisions'=>$Precision,'recall'=>$Recall,'nDCG'=>$nDCG,'coverage'=>$Coverage,'runtime'=>$runtime];
+			$data=['username'=>$_POST['username'],'createdat'=>date("Y-m-d H:i:s",time()),'algorithm'=>$_POST['alg'],'dataset'=>$_POST['dataset'],'precisions'=>$Precision,'recall'=>$Recall,'nDCG'=>$nDCG,'coverage'=>$Coverage,'diversity'=>$Diversity,'novelty'=>$Novelty,'runtime'=>$runtime];
 			foreach ($para as $key => $value) {
 				$data[$key]=$value;
 			}

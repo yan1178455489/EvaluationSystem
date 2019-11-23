@@ -1,0 +1,5 @@
+dataset=douban_GEMa
+topN=5
+
+test=test.csv
+results=results.txt
