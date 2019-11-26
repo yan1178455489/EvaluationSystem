@@ -3,6 +3,7 @@
 <?php
 	$str = $_GET['id'];
 	$alg=Db::table('algorithm')->where('algname',$str)->find();
+	$datasets=explode(",",$alg["dataset"]);
 ?>
 <div class="col-md-10">
 	
@@ -40,8 +41,10 @@
 	<div class="panel panel-default">
 		<form action="{:url('user/setpara')}" method="post">
 		<input type="hidden" name="alg" value="{$_GET['id']}" />	
-		<input type="radio" checked="checked" name="dataset" value="{$alg.dataset}" />
-		{$alg.dataset}
+		{volist name='datasets' id='value'}
+		<input type="radio" checked="checked" name="dataset" value="{$value}" />
+		{$value}
+		{/volist}
 		<br />
 		<br />
 		<input type="submit" value="设置参数" class="btn btn-success">

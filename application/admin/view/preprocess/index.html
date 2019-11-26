@@ -1,0 +1,28 @@
+{layout name="layout" /}
+<!-- 内容 -->
+<div class="col-md-10">
+	
+	<ol class="breadcrumb">
+		<li class="active">选择数据处理方式</li>
+
+	</ol>
+
+	<!-- 面版 -->
+	<div class="panel panel-default">
+		
+		<div class="panel-body">
+			<button class="btn btn-default"><a onclick="renumber()">id重新编号</a></button>
+			<button class="btn btn-default"><a onclick="genGroup()">生成群组</a></button>
+		</div>
+		
+	</div>
+</div>
+
+<script type="text/javascript">
+	function renumber(id){
+		 window.location.href="{:url('preprocess/renumber')}";
+	}
+	function genGroup(){
+		window.location.href="{:url('preprocess/genGroup')}";
+	}
+</script>

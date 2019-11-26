@@ -4,40 +4,64 @@ namespace app\admin\controller;
 
 // 导入类
 use think\Controller;
-use app\admin\model\Dataset;
-
+use think\Db;
+use think\Paginator;
 
 /**
 * 压缩和解压文件
 */
-class PreProcess
-{
-	// 返回数据集页面
-	public function pre_process(){
+class Preprocess extends Controller{
+	// 返回选择处理方式页面
+	public function index(){
 		return $this->fetch();
 	}
+	// 返回id重新编号处理页面
+	public function renumber(){
+		$datasets = Db::table('dataset')->select();
+		$files = Db::table('dataset')->where("id",$datasets[0]['id'])->column('name');
+
+		return $this->fetch("",['datasets'=>$datasets,'list1'=>$files]);
+	}
+	// 返回数据集对应文件
+	public function get_files(){
+
+		$id = $_POST['id'];
+
+		$files = Db::table('dataset')->where('id',$id)->column('files');
+		$list = explode(',',$files[0]);
+		return $list;
+	}
 	//..\..\..\public\meetup_ch
-	public function do_process(){
+	public function process_renumber(){
+		$dataset = $_POST['datasets'];
+		echo $dataset;
+		if ($dataset=="meetup_ch") {
+			$this->process_meetup();	
+		}
+		$this->success('处理成功', 'Index/homepage');
+	}
+	public function process_meetup(){
 		$event_dict = array();
 		$group_dict = array();
 		$user_dict = array();
 		$locat_dict = array();
-		$file = fopen('..\..\..\public\meetup_ch\events.csv', "r") or die("Unable to open file!");
-		$wf = fopen('..\..\..\public\meetup_ch\group_event.csv', "w") or die("Unable to open group!");
-		$wf0 = fopen('..\..\..\public\meetup_ch\location_event.csv', "w") or die("Unable to open location!");
-		$wf1 = fopen('..\..\..\public\meetup_ch\time_event.csv', "w") or die("Unable to open time!");
+		$file = fopen('meetup_ch\events.csv', "r") or die("Unable to open file!");
+		$wf = fopen('meetup_ch\group_event.csv', "w") or die("Unable to open group!");
+		$wf0 = fopen('meetup_ch\location_event.csv', "w") or die("Unable to open location!");
+		$wf1 = fopen('meetup_ch\time_event.csv', "w") or die("Unable to open time!");
 		$event_count = 0;
 		$group_count = 0;
 		$locat_count = 0;
+		$line = fgetcsv($file);
 		//读取输入文件
 		while($line = fgetcsv($file)){
 			$eid = $line[0];
 			$time = $line[1];
 			$lid = $line[2];
 			$gid = $line[3];
-			$time_array = split(" ", $time);
+			$time_array = explode(" ", $time);
 			$weekday = date("w",strtotime($time_array[0]));
-			$hour_array = split(":", $time_array[1]);
+			$hour_array = explode(":", $time_array[1]);
 			$real_time = intval($hour_array[0]);
 			if ($real_time >= 0 && $real_time <= 5) {
 				$real_time = 1;
@@ -67,7 +91,6 @@ class PreProcess
 			if ($event_count>5000) {
 				break;
 			}
-
 		}
 		fclose($file);
 		fclose($wf);
@@ -75,8 +98,8 @@ class PreProcess
 		fclose($wf1);
 
 		$user_count = 0;
-		$train_file = fopen('..\..\..\public\meetup_ch\trains.csv', "r") or die("Unable to open file!");
-		$wf = fopen('..\..\..\public\meetup_ch\train.csv', "w") or die("Unable to open file!");
+		$train_file = fopen('meetup_ch\trains.csv', "r") or die("Unable to open file!");
+		$wf = fopen('meetup_ch\train.csv', "w") or die("Unable to open file!");
 		while ($line=fgetcsv($train_file)) {
 			$uid = $line[0];
 			$eid = $line[1];
@@ -92,8 +115,8 @@ class PreProcess
 		fclose($train_file);
 		fclose($wf);
 
-		$test_file = fopen('..\..\..\public\meetup_ch\tests.csv', "r") or die("Unable to open file!");
-		$wf = fopen('..\..\..\public\meetup_ch\test.csv', "w") or die("Unable to open file!");
+		$test_file = fopen('meetup_ch\tests.csv', "r") or die("Unable to open file!");
+		$wf = fopen('meetup_ch\test.csv', "w") or die("Unable to open file!");
 		while ($line=fgetcsv($test_file)) {
 			$uid = $line[0];
 			$eid = $line[1];
@@ -104,8 +127,7 @@ class PreProcess
 		}
 		fclose($test_file);
 		fclose($wf);
+
 	}
 }
-$processor = new PreProcess();
-$processor->do_process();
 ?>

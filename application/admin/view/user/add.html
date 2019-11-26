@@ -1,4 +1,7 @@
 {layout name="layout" /}
+<?php
+$datasets=Db::table('dataset')->column("name");
+?>
 <!-- 内容 -->
 <div class="col-md-10">
 	
@@ -29,8 +32,11 @@
 				</div>
 
 				<div class="form-group">
-					<label for="dataset">数据集名称</label>
-					<input type="text" name="dataset" class="form-control" id="dataset">
+					<label for="dataset">选择数据集</label>
+					{volist name='datasets' id='value'}
+						<input type="checkbox" name="dataset[]" value="{$value}" />
+						{$value}
+					{/volist}
 				</div>
 
 				<div class="form-group">
@@ -58,3 +64,26 @@
 		
 	</div>
 </div>
+
+<script type="text/javascript">
+	var SelectFalse = false; //用于判断是否被选择条件
+	function Submit(){
+		var chboxValue = [];
+		var CheckBox = $('input[name = dataset]');//得到所的复选框
+
+		for(var i = 0; i < CheckBox.length; i++){
+			//jquery1.6以上可以if(CheckBox[i].prop('checked') == true)去判断checkbox是否被选中
+			if(CheckBox[i].checked)
+			{
+				SelectFalse = true;
+				chboxValue.push(CheckBox[i].value);//将被选择的值追加到
+			}
+		}
+
+		if(!SelectFalse){
+			alert("对不起,数据集至少要选一项");
+			return false;
+		}
+		alert("您选择数据集对应的value是："+chboxValue);
+	}
+</script>

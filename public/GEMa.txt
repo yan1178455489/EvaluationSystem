@@ -1,5 +1,6 @@
 dataset=douban_GEMa
 topN=5
 
+train=train.csv
 test=test.csv
-results=results.txt
+results=results.csv
