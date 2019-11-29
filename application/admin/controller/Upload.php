@@ -56,8 +56,12 @@ class Upload extends Controller
 
 	public function do_upload_dataset(){
 		// 移动到框架应用根目录/public/ 目录下
-		$data_file = request()->file('dataset');
-		$info = $data_file->move('./','');  
+		if(request()->file('dataset')){
+			$data_file = request()->file('dataset');
+			$info = $data_file->move('./','');  
+		} else{
+			$this->error('文件为空');
+		}
 		$file_name = $_FILES['dataset']['name'];
 		$array = explode('.',$file_name);
 		$data_name = $array[0];

@@ -25,13 +25,12 @@ class Preprocess extends Controller{
 	// 返回数据集对应文件
 	public function get_files(){
 
-		$id = $_POST['id'];
-
+		$id = $_GET['id'];
 		$files = Db::table('dataset')->where('id',$id)->column('files');
 		$list = explode(',',$files[0]);
 		return $list;
 	}
-	//..\..\..\public\meetup_ch
+	// id重新编号
 	public function process_renumber(){
 		$dataset = $_POST['datasets'];
 		echo $dataset;

@@ -11,7 +11,7 @@
 		<form action="{:url('preprocess/process_renumber')}" method="post">
 			<select name="datasets" id="datasets">
 				{volist name='datasets' id='value'}
-					<option value="{$value.name}">{$value.name}</option>
+					<option value="{$value.id}">{$value.name}</option>
 				{/volist}
 			</select>
 			<select name="files" id="files">
@@ -33,7 +33,7 @@
 		objectModel['id'] = value;
 		$.ajax({
 			cache:false,
-			type:"POST",
+			type:"GET",
 			url:"get_files",
 			dataType:"json",
 			data:objectModel,

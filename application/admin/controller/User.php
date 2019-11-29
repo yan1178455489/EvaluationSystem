@@ -11,7 +11,7 @@ use think\Paginator;
 
 class User extends Controller{
 
-	// 选择数据集方法
+	// 访问选择数据集页面
 	public function dataset(){
 		return $this->fetch();
 	}
@@ -50,23 +50,22 @@ class User extends Controller{
 			'dataset'=>$datasets,
 			'algtype'=>$_POST['algtype'],
 			'need_computed'=>$_POST['need_computed'],
-			'filetype'=>$array[0]
+			'filetype'=>$array[0],
+			'create_time'=>date("Y-m-d H:i:s",time())
 		);
 		Db::table('algorithm')->insert($data);
 
 		$this->success('上传成功', 'Index/homepage');
 	}
 	
-	// 用户修改方法
+	// 删除
 	public function delete(){
 		$id=$_POST['ids'];
 		if(Db::table('record')->delete($id)){
 
 			return (int)$id;
 		}
-
 		return;
-		
 	}
 
 	public function deletev(){
@@ -346,8 +345,6 @@ class User extends Controller{
 
 		return $this->fetch('',['xdata'=>$xdata0,'ydata'=>$ydata0,'xname'=>$xname,'yname'=>$yname]);
 	}
-
-	
 
 	public function instructions(){
 		return $this->fetch();
