@@ -1,0 +1,59 @@
+{layout name="layout" /}
+<!-- 内容 -->
+<div class="col-md-10">
+	
+	<ol class="breadcrumb">
+		<li class="active">选择需要处理的数据文件</li>
+	</ol>
+
+	<!-- 面版 -->
+	<div class="panel panel-default">
+		<form action="{:url('preprocess/gen_group')}" method="post">
+			<select name="datasets" id="datasets">
+				{volist name='datasets' id='value'}
+					<option value="{$value.id}">{$value.name}</option>
+				{/volist}
+			</select>
+			<select name="files" id="files">
+				{volist name='list1' id='value'}
+					<option value="{$value}">{$value}</option>
+				{/volist}
+			</select>
+			<br />
+			<br />
+			<input type="submit" value="开始处理" class="btn btn-success">
+		</form>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$('#datasets').change(function(){
+		var objectModel = {};
+		var value = $(this).val();
+		objectModel['id'] = value;
+		$.ajax({
+			cache:false,
+			type:"GET",
+			url:"get_files",
+			dataType:"json",
+			data:objectModel,
+			timeout:3000,
+			success:success,
+			error:error
+		});
+	});
+	function success(data){
+		$("#files").empty();
+		var count = data.length;
+		console.log(data);
+		console.log(count);
+		var b = "";
+		for (var i = 0; i < count; i++) {
+			b += "<option value='"+data[i]+"'>"+data[i]+"</option>";
+		}
+		$("#files").append(b);
+	}
+	function error(){
+		alert("获取数据集文件失败！");
+	}
+</script>
