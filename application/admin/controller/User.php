@@ -133,29 +133,29 @@ class User extends Controller{
 		list($msec, $sec) = explode(' ', microtime());
 		$endtime =  (float)sprintf('%.0f', (floatval($msec) + floatval($sec)) * 1000);
 		$runtime = $endtime-$starttime;
-		$data=['username'=>$_POST['username'],'createdat'=>date("Y-m-d H:i:s",time()),'algorithm'=>$_POST['alg'],'dataset'=>$_POST['dataset'],'runtime'=>$runtime];
-		if($need_computed == 1){
-			$config = fopen($_POST['alg'].".txt", "r");
+		
+		$config = fopen($_POST['alg'].".txt", "r");
+		$line = fgets($config);
+		$param = array();
+		// 读取输入参数
+		while (strlen($line)>2) {
+			list($key,$value) = explode("=", $line);
+			$key = trim($key);
+			$value = trim($value);
+			$param[$key]=$value;
 			$line = fgets($config);
-			//读取输入参数
-			while (strlen($line)>2) {
-				list($key,$value) = explode("=", $line);
-				$len=strlen($value);
-				$value = str_replace(PHP_EOL, '', $value);
-				$param[$key]=$value;
-				$line = fgets($config);
-			}
-			
-			//读取输入输出文件
-			while(!feof($config)){
-				$line = fgets($config);
-				list($key,$value) = explode("=", $line);
-				$len=strlen($value);
-				$value = str_replace(PHP_EOL, '', $value);
-				$datafile[$key] = $value;
-			}
-			fclose($config);
-			// echo $dataset."/".$datafile['test'];
+		}
+		// 读取文件对应路径
+		$datafile = array();
+		while(!feof($config)){
+			$line = fgets($config);
+			list($key,$value) = explode("=", $line);
+			$key = trim($key);
+			$value = trim($value);
+			$datafile[$key] = $value;
+		}
+		fclose($config);
+		if($need_computed == 1){
 			$train_file = fopen($dataset."/".$datafile['train'], "r");
 			$test_file = fopen($dataset."/".$datafile['test'], "r");
 			$test = array();
@@ -179,10 +179,20 @@ class User extends Controller{
 			}
 			fclose($train_file);
 			fclose($test_file);
+			// 如果有user_map等映射文件
+			if(array_key_exists("user_map",$datafile)&&array_key_exists("event_map",$datafile)){
+				$user_map_file = fopen($dataset."/".$datafile['user_map'], "r");
+				while($line = fgetcsv($user_map_file)){
+					$user_map[$line[0]] = $line[1];
+				}
+				fclose($user_map_file);
+				$event_map_file = fopen($dataset."/".$datafile['event_map'], "r");
+				while($line = fgetcsv($event_map_file)){
+					$event_map[$line[0]] = $line[1];
+				}
+				fclose($event_map_file);
+			}
 			$i_num = count($participate_num);
-
-			$results_file = fopen($datafile['results'], "r");
-
 			$hits = 0;
 			$precision = 0;
 			$recall = 0;
@@ -193,14 +203,26 @@ class User extends Controller{
 			$diversity = 0;
 			$recommend_list = array();
 			$recommend_map = array();
-			$u_num = 0;
 			$topN = (int)$param['topN'];
-			while($line = fgetcsv($results_file)){
-				for ($i=1; $i <=$topN ; $i++) {	
-        			$recommend_list[$u_num][] = $line[$i];
-        			$recommend_map[$line[0]][] = $line[$i];
-        		}
-        		$u_num++;
+
+			$u_num = 0;
+			$results_file = fopen($datafile['results'], "r");
+			if(array_key_exists("user_map",$datafile)&&array_key_exists("event_map",$datafile)){
+				while($line = fgetcsv($results_file)){
+					for ($i=1; $i <=$topN ; $i++) {	
+						$recommend_list[$u_num][] = $event_map[$line[$i]];
+						$recommend_map[$user_map[$line[0]]][] = $event_map[$line[$i]];
+					}
+					$u_num++;
+				}
+			} else {
+				while($line = fgetcsv($results_file)){
+					for ($i=1; $i <=$topN ; $i++) {	
+						$recommend_list[$u_num][] = $line[$i];
+						$recommend_map[$line[0]][] = $line[$i];
+					}
+					$u_num++;
+				}
 			}
 			fclose($results_file);
 			// 计算用户间多样性
@@ -243,46 +265,21 @@ class User extends Controller{
 			$nDCG = $DCG/($iDCG * $u_num);
 			$coverage = count($items)/$i_num;
 			$f1 = 2*$precision*$recall/($precision+$recall);
-			$data=['precisions'=>$precision,'recall'=>$recall,'f1'=>$f1,'nDCG'=>$nDCG,'coverage'=>$coverage,'diversity'=>$diversity,'novelty'=>$novelty];
-			// foreach ($param as $key => $value) {
-			// 	$data[$key]=$value;
-			// }
+			$data=['username'=>$_POST['username'],'createdat'=>date("Y-m-d H:i:s",time()),'algorithm'=>$_POST['alg'],'dataset'=>$_POST['dataset'],'runtime'=>$runtime,
+			'precisions'=>$precision,'recall'=>$recall,'f1'=>$f1,'nDCG'=>$nDCG,'coverage'=>$coverage,'diversity'=>$diversity,'novelty'=>$novelty,'topN'=>$param['topN']];
 			$param_json = json_encode($param);
 			$data["param"] = $param_json;
 			Db::table('record')->insert($data);
 		}
 		else{
-			$config = fopen($_POST['alg'].".txt", "r");
-			$line = fgets($config);
-			// 读取输入参数
-			while (strlen($line)>2) {
-				list($key,$value) = explode("=", $line);
-				$len=strlen($value);
-				if(strrpos($value, "\n")){
-					$value = substr($value, 0, $len-2);
-				}
-				$param[$key]=$value;
-				$line = fgets($config);
-			}
-			// 读取文件对应路径
-			while(!feof($config)){
-				$line = fgets($config);
-				list($key,$value) = explode("=", $line);
-				if(strrpos($value, "\n")){
-					$value = substr($value, 0, $len-2);
-				}
-				$datafile[$key] = $value;
-			}
-			fclose($config);
-
+			$data=['username'=>$_POST['username'],'createdat'=>date("Y-m-d H:i:s",time()),'algorithm'=>$_POST['alg'],
+			'dataset'=>$_POST['dataset'],'runtime'=>$runtime,'topN'=>$param['topN']];
 			$results = fopen($datafile['results'], "r");
 			$line = fgets($results);
 			while (strlen($line)>2) {
 				list($key,$value) = explode("=", $line);
-				$len=strlen($value);
-				if(strrpos($value, "\n")){
-					$value = substr($value, 0, $len-1);
-				}
+				$key = trim($key);
+				$value = trim($value);
 				$data[$key]=$value;
 				$line = fgets($results);
 			}
@@ -291,7 +288,7 @@ class User extends Controller{
 			$data["param"] = $param_json;
 			Db::table('record')->insert($data);
 		}
-		$this->success('运行成功，正在返回实验结果','history');
+		$this->success('运行成功，正在返回实验结果','search');
 	}
 
 	public function drawchart(){

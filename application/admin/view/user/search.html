@@ -12,10 +12,10 @@
 			<!-- <p class="pull-right tots" >共有 n 条数据</p> -->
 				<form action="{:url('user/search')}" class="form-inline pull-left" method="post">
 					<select name="sel">
-					<option value="topn">topn</option>
-					<option value="K">K</option>
-					<option value="gsize">群组规模</option>
+					<option value="username">操作人</option>
+					<option value="dataset">数据集名称</option>
 					<option value="algorithm">算法名称</option>
+					<option value="topN">topN</option>
 					</select>
 					<div class="form-group">
 						<input type="text" name="search" class="form-control" placeholder="请输入你要搜索的内容" id="">
@@ -37,6 +37,7 @@
 						<th>运行时间(ms)</th>
 						<th>precision</th>
 						<th>recall</th>
+						<th>f1</th>
 						<th>nDCG</th>
 						<th>coverage</th>
 						<th>novelty</th>
@@ -56,6 +57,7 @@
 						<td>{$value.runtime}</td>
 						<td>{$value.precisions}</td>
 						<td>{$value.recall}</td>
+						<td>{$value.f1}</td>
 						<td>{$value.nDCG}</td>
 						<td>{$value.coverage}</td>
 						<td>{$value.novelty}</td>
