@@ -115,27 +115,26 @@ class User extends Controller{
 		$file_type = $alg['filetype'];
 		$selects = $_POST['indicator'];
 
+		$config = fopen($_POST['alg'].".txt", "w");
+		fwrite($config,$_POST['config']);
+		fclose($config);
+
+		list($msec, $sec) = explode(' ', microtime());
+		$starttime =  (float)sprintf('%.0f', (floatval($msec) + floatval($sec)) * 1000);
+		if($file_type == 'jar'){
+			exec("java -jar ".$_POST['alg'].".jar", $output, $return_val);
+		}
+		else if($file_type == 'py'){
+			exec("python ".$_POST['alg'].".py", $output, $return_val);
+		}
+		else if($file_type == 'exe'){
+			exec("start ".$_POST['alg'].".exe", $output, $return_val);
+		}
+		list($msec, $sec) = explode(' ', microtime());
+		$endtime =  (float)sprintf('%.0f', (floatval($msec) + floatval($sec)) * 1000);
+		$runtime = $endtime-$starttime;
+		$data=['username'=>$_POST['username'],'createdat'=>date("Y-m-d H:i:s",time()),'algorithm'=>$_POST['alg'],'dataset'=>$_POST['dataset'],'runtime'=>$runtime];
 		if($need_computed == 1){
-			$config = fopen($_POST['alg'].".txt", "w");
-			fwrite($config,$_POST['config']);
-			fclose($config);
-
-			list($msec, $sec) = explode(' ', microtime());
-	 		$starttime =  (float)sprintf('%.0f', (floatval($msec) + floatval($sec)) * 1000);
-	 		if($file_type == 'jar'){
-				exec("java -jar ".$_POST['alg'].".jar", $output, $return_val);
-	 		}
-			else if($file_type == 'py'){
-				exec("python ".$_POST['alg'].".py", $output, $return_val);
-			}
-			else if($file_type == 'exe'){
-				exec("start ".$_POST['alg'].".exe", $output, $return_val);
-			}
-
-			list($msec, $sec) = explode(' ', microtime());
-	 		$endtime =  (float)sprintf('%.0f', (floatval($msec) + floatval($sec)) * 1000);
-	 		$runtime = $endtime-$starttime;
-
 			$config = fopen($_POST['alg'].".txt", "r");
 			$line = fgets($config);
 			//读取输入参数
@@ -143,9 +142,10 @@ class User extends Controller{
 				list($key,$value) = explode("=", $line);
 				$len=strlen($value);
 				$value = str_replace(PHP_EOL, '', $value);
-				$para[$key]=$value;
+				$param[$key]=$value;
 				$line = fgets($config);
 			}
+			
 			//读取输入输出文件
 			while(!feof($config)){
 				$line = fgets($config);
@@ -194,7 +194,7 @@ class User extends Controller{
 			$recommend_list = array();
 			$recommend_map = array();
 			$u_num = 0;
-			$topN = (int)$para['topN'];
+			$topN = (int)$param['topN'];
 			while($line = fgetcsv($results_file)){
 				for ($i=1; $i <=$topN ; $i++) {	
         			$recommend_list[$u_num][] = $line[$i];
@@ -243,46 +243,28 @@ class User extends Controller{
 			$nDCG = $DCG/($iDCG * $u_num);
 			$coverage = count($items)/$i_num;
 			$f1 = 2*$precision*$recall/($precision+$recall);
-			$data=['username'=>$_POST['username'],'createdat'=>date("Y-m-d H:i:s",time()),'algorithm'=>$_POST['alg'],'dataset'=>$_POST['dataset'],'precisions'=>$precision,'recall'=>$recall,'f1'=>$f1,'nDCG'=>$nDCG,'coverage'=>$coverage,'diversity'=>$diversity,'novelty'=>$novelty,'runtime'=>$runtime];
-			foreach ($para as $key => $value) {
-				$data[$key]=$value;
-			}
-
+			$data=['precisions'=>$precision,'recall'=>$recall,'f1'=>$f1,'nDCG'=>$nDCG,'coverage'=>$coverage,'diversity'=>$diversity,'novelty'=>$novelty];
+			// foreach ($param as $key => $value) {
+			// 	$data[$key]=$value;
+			// }
+			$param_json = json_encode($param);
+			$data["param"] = $param_json;
 			Db::table('record')->insert($data);
 		}
 		else{
-			$config = fopen($_POST['alg'].".txt", "w");
-			fwrite($config,$_POST['config']);
-			fclose($config);
-
-			list($msec, $sec) = explode(' ', microtime());
-	 		$starttime =  (float)sprintf('%.0f', (floatval($msec) + floatval($sec)) * 1000);
-			if($file_type == 'jar'){
-				exec("java -jar ".$_POST['alg'].".jar", $output, $return_val);
-	 		}
-			else if($file_type == 'py'){
-				exec("python ".$_POST['alg'].".py", $output, $return_val);
-			}
-			else if($file_type == 'exe'){
-				exec("start ".$_POST['alg'].".exe", $output, $return_val);
-			}
-			list($msec, $sec) = explode(' ', microtime());
-	 		$endtime =  (float)sprintf('%.0f', (floatval($msec) + floatval($sec)) * 1000);
-	 		$runtime = $endtime-$starttime;
-
-	 		$data=['username'=>$_POST['username'],'createdat'=>date("Y-m-d H:i:s",time()),'algorithm'=>$_POST['alg'],'dataset'=>$_POST['dataset'],'runtime'=>$runtime];
-
 			$config = fopen($_POST['alg'].".txt", "r");
 			$line = fgets($config);
+			// 读取输入参数
 			while (strlen($line)>2) {
 				list($key,$value) = explode("=", $line);
 				$len=strlen($value);
 				if(strrpos($value, "\n")){
 					$value = substr($value, 0, $len-2);
 				}
-				$data[$key]=$value;
+				$param[$key]=$value;
 				$line = fgets($config);
 			}
+			// 读取文件对应路径
 			while(!feof($config)){
 				$line = fgets($config);
 				list($key,$value) = explode("=", $line);
@@ -305,7 +287,8 @@ class User extends Controller{
 				$line = fgets($results);
 			}
 			fclose($results);
-
+			$param_json = json_encode($param);
+			$data["param"] = $param_json;
 			Db::table('record')->insert($data);
 		}
 		$this->success('运行成功，正在返回实验结果','history');
@@ -349,19 +332,27 @@ class User extends Controller{
 	public function instructions(){
 		return $this->fetch();
 	}
-	// 查看历史记录方法
-	public function history(){
-		$data = Db::table('record')->paginate(6);
+	// // 查看历史记录方法
+	// public function history(){
+	// 	$data = Db::table('record')->paginate(6);
 
-		$this->assign('data',$data);
-		return $this->fetch();
-	}
+	// 	$this->assign('data',$data);
+	// 	return $this->fetch();
+	// }
 	//搜索实验记录
 	public function search(){
-		$field = $_POST['sel'];
-		$content = $_POST['search'];
-		$content = '%'.$content.'%';
-		$data = Db::table('record')->whereLike($field,$content)->select();
+		$filed_content = "username";
+		$content_content = "";
+		if(array_key_exists('sel',$_POST)){
+			$filed_content = $_POST['sel'];
+		}
+		if(array_key_exists('search',$_POST)){
+			$content_content = $_POST['search'];
+		}
+		$field = $filed_content;
+		$content = $content_content;
+		$content = $content.'%';
+		$data = Db::table('record')->whereLike($field,$content)->paginate(6);
 		Db::execute('drop view search');
 		Db::execute("create view search as (select * from record where $field LIKE '$content')");
 		return $this->fetch('',['data'=>$data]);

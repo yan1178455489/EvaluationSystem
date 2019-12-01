@@ -8,126 +8,85 @@
 
 	<!-- 面版 -->
 	<div class="panel panel-default">
-	<div class="panel-heading">
-		<!-- <p class="pull-right tots" >共有 n 条数据</p> -->
-			<form action="{:url('user/search')}" class="form-inline pull-left" method="post">
-				<select name="sel">
-				  <option value="topn">topn</option>
-				  <option value="K">K</option>
-				  <option value="gsize">群组规模</option>
-				  <option value="algorithm">算法名称</option>
-				</select>
-				<div class="form-group">
-					<input type="text" name="search" class="form-control" placeholder="请输入你要搜索的内容" id="">
-				</div>
-				
-				<input type="submit" value="搜索" class="btn btn-success">
+		<div class="panel-heading">
+			<!-- <p class="pull-right tots" >共有 n 条数据</p> -->
+				<form action="{:url('user/search')}" class="form-inline pull-left" method="post">
+					<select name="sel">
+					<option value="topn">topn</option>
+					<option value="K">K</option>
+					<option value="gsize">群组规模</option>
+					<option value="algorithm">算法名称</option>
+					</select>
+					<div class="form-group">
+						<input type="text" name="search" class="form-control" placeholder="请输入你要搜索的内容" id="">
+					</div>
+					
+					<input type="submit" value="搜索" class="btn btn-success">
+				</form>
+		</div>
+		<div class="panel-body">
+			<table class="table-striped" border="1" width="928px" align="center" cellpadding="0" cellspacing="0">
+				<thead title="点击排序">
+					<tr>
+						<th>删除记录</th>
+						<th>用户名</th>
+						<th>操作时间</th>
+						<th>算法名</th>
+						<th>数据集名</th>
+						<th>输入参数</th>
+						<th>运行时间(ms)</th>
+						<th>precision</th>
+						<th>recall</th>
+						<th>nDCG</th>
+						<th>coverage</th>
+						<th>novelty</th>
+						<th>diversity</th>
+						<th>topN</th>
+					</tr>
+				</thead>
+				<tbody>
+				{volist name='data' id='value'}
+					<tr id="{$value.id}">
+						<td class="remove"><a class="red" onclick="deletes({$value.id})" title="删除"><span class="glyphicon glyphicon-trash"></span></a></td>
+						<td>{$value.username}</td>
+						<td>{$value.createdat}</td>
+						<td>{$value.algorithm}</td>
+						<td>{$value.dataset}</td>
+						<td>{$value.param}</td>
+						<td>{$value.runtime}</td>
+						<td>{$value.precisions}</td>
+						<td>{$value.recall}</td>
+						<td>{$value.nDCG}</td>
+						<td>{$value.coverage}</td>
+						<td>{$value.novelty}</td>
+						<td>{$value.diversity}</td>
+						<td>{$value.topN}</td>
+					</tr>
+				{/volist}
+				</tbody>
+			</table>
+			{$data->render()}
+			<form action="{:url('user/drawchart')}" method="post">
+				横坐标：
+				<input id="algorithm" type="radio" checked="checked" value="algorithm" name="xaxis">algorithm</input>  
+				<input id="topn" type="radio" value="topN" name="xaxis">topn</input>
+				<br>
+				纵坐标：
+				<input id="runtime" type="radio" checked="checked" value="runtime" name="yaxis">runtime</input>  
+				<input id="precision" type="radio" value="precisions" name="yaxis">precision</input>  
+				<input id="recall" type="radio" value="recall" name="yaxis">recall</input>  
+				<input id="f1" type="radio" value="f1" name="yaxis">f1</input> 
+				<input id="nDCG" type="radio" value="nDCG" name="yaxis">nDCG</input>  
+				<input id="coverage" type="radio" value="coverage" name="yaxis">coverage</input>  
+				<input id="novelty" type="radio" value="novelty" name="yaxis">novelty</input> 
+				<input id="diversity" type="radio" value="diversity" name="yaxis">diversity</input>  
+				<br>
+				<input type="submit" value="生成柱状图" class="btn btn-success">
 			</form>
-	</div>
-	<div class="panel-body">
-		<table border="1" width="928px" align="center">
-			<thead title="点击排序">
-				<tr>
-					<th>删除记录</th>
-					<th>用户名</th>
-					<th>操作时间</th>
-					<th>算法名</th>
-					<th>数据集名</th>
-					<th>运行时间(ms)</th>
-					<th>precision</th>
-					<th>recall</th>
-					<th>nDCG</th>
-					<th>coverage</th>
-					<th>novelty</th>
-					<th>diversity</th>
-					<th>topN</th>
-					<th>群组规模</th>
-					<th>融合策略</th>
-					<th>最近邻数</th>
-					<th>K</th>
-					<th>alpha</th>
-					<th>lambda</th>
-					<th>gamma</th>
-					<th>beta</th>
-					<th>rho</th>
-					<th>eta</th>
-				</tr>
-			</thead>
-			<tbody>
-			{volist name='data' id='value'}
-				<tr id="{$value.id}">
-					<td class="remove"><a class="red" onclick="deletes({$value.id})" title="删除"><span class="glyphicon glyphicon-trash"></span></a></td>
-					<td>{$value.username}</td>
-					<td>{$value.createdat}</td>
-					<td>{$value.algorithm}</td>
-					<td>{$value.dataset}</td>
-					<td>{$value.runtime}</td>
-					<td>{$value.precisions}</td>
-					<td>{$value.recall}</td>
-					<td>{$value.nDCG}</td>
-					<td>{$value.coverage}</td>
-					<td>{$value.novelty}</td>
-					<td>{$value.diversity}</td>
-					<td>{$value.topN}</td>
-					<td>{$value.gSize}</td>
-					<td>{$value.gStrategy}</td>
-					<td>{$value.neighborNum}</td>
-					<td>{$value.K}</td>
-					<td>{$value.alpha}</td>
-					<td>{$value.lambda}</td>
-					<td>{$value.gamma}</td>
-					<td>{$value.beta}</td>
-					<td>{$value.rho}</td>
-					<td>{$value.eta}</td>
-				</tr>
-			{/volist}
-			</tbody>
-		</table>
-		<form action="{:url('user/drawchart')}" method="post">
-			横坐标：
-			<input id="algorithm" type="radio" checked="checked" value="algorithm" name="xaxis">algorithm</input>  
-			<input id="topn" type="radio" value="topN" name="xaxis">topn</input>  
-			<input id="K" type="radio" value="K" name="xaxis">K</input>  
-			<input id="alpha" type="radio" value="alpha" name="xaxis">alpha</input>  
-			<input id="lambda" type="radio" value="lambda" name="xaxis">lambda</input>  
-			<input id="gSize" type="radio" value="gSize" name="xaxis">gSize</input>  
-			<input id="gStrategy" type="radio" value="gStrategy" name="xaxis">gStrategy</input>  
-			<input id="gamma" type="radio" value="gamma" name="xaxis">gamma</input>  
-			<input id="lambda" type="radio" value="lambda" name="xaxis">lambda</input>  
-			<input id="beta" type="radio" value="beta" name="xaxis">beta</input>  
-			<input id="eta" type="radio" value="eta" name="xaxis">eta</input>  
-			<br>
-			纵坐标：
-			<input id="runtime" type="radio" checked="checked" value="runtime" name="yaxis">runtime</input>  
-			<input id="precision" type="radio" value="precisions" name="yaxis">precision</input>  
-			<input id="recall" type="radio" value="recall" name="yaxis">recall</input>  
-			<input id="nDCG" type="radio" value="nDCG" name="yaxis">nDCG</input>  
-			<input id="coverage" type="radio" value="coverage" name="yaxis">coverage</input>  
-			<input id="novelty" type="radio" value="novelty" name="yaxis">novelty</input>  
-			<br>
-			<input type="submit" value="生成柱状图" class="btn btn-success">
-		</form>
-	</div>
-		<!-- <div class="panel-heading">
-			<button class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> 批量删除</button>
-			<a href="add.html" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> 添加管理员</a>
-			
-			<p class="pull-right tots" >共有 10 条数据</p>
-			<form action="" class="form-inline pull-right">
-				<div class="form-group">
-					<input type="text" name="" class="form-control" placeholder="请输入你要搜索的内容" id="">
-				</div>
-				
-				<input type="submit" value="搜索" class="btn btn-success">
-			</form>
-		</div> -->
+		</div>
 	</div>
 </div>
-
-<script src="__ADMINS__/bs/js/echarts.js"></script>
 <script type="text/javascript">
-	
-
 	function deletes(id){
 		if(confirm("确定要删除吗？")){
 			window.event.returnValue = true;
@@ -137,7 +96,7 @@
 
 		if(window.event.returnValue == true){
 			$.ajax({
-				url:'deletev',
+				url:'delete',
 				success:success,
 				error:error,
 				data:{ids:id},
