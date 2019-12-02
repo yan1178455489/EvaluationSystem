@@ -25,50 +25,52 @@
 				</form>
 		</div>
 		<div class="panel-body">
-			<table class="table-striped" border="1" width="928px" align="center" cellpadding="0" cellspacing="0">
-				<thead title="点击排序">
-					<tr>
-						<th>删除记录</th>
-						<th>用户名</th>
-						<th>操作时间</th>
-						<th>算法名</th>
-						<th>数据集名</th>
-						<th>输入参数</th>
-						<th>运行时间(ms)</th>
-						<th>precision</th>
-						<th>recall</th>
-						<th>f1</th>
-						<th>nDCG</th>
-						<th>coverage</th>
-						<th>novelty</th>
-						<th>diversity</th>
-						<th>topN</th>
-					</tr>
-				</thead>
-				<tbody>
-				{volist name='data' id='value'}
-					<tr id="{$value.id}">
-						<td class="remove"><a class="red" onclick="deletes({$value.id})" title="删除"><span class="glyphicon glyphicon-trash"></span></a></td>
-						<td>{$value.username}</td>
-						<td>{$value.createdat}</td>
-						<td>{$value.algorithm}</td>
-						<td>{$value.dataset}</td>
-						<td>{$value.param}</td>
-						<td>{$value.runtime}</td>
-						<td>{$value.precisions}</td>
-						<td>{$value.recall}</td>
-						<td>{$value.f1}</td>
-						<td>{$value.nDCG}</td>
-						<td>{$value.coverage}</td>
-						<td>{$value.novelty}</td>
-						<td>{$value.diversity}</td>
-						<td>{$value.topN}</td>
-					</tr>
-				{/volist}
-				</tbody>
-			</table>
-			{$data->render()}
 			<form action="{:url('user/drawchart')}" method="post">
+				<table class="table-striped" border="1" width="928px" align="center" cellpadding="0" cellspacing="0">
+					<thead title="点击排序">
+						<tr>
+							<th>选择</th>
+							<th>删除记录</th>
+							<th>用户名</th>
+							<th>操作时间</th>
+							<th>算法名</th>
+							<th>数据集名</th>
+							<th>输入参数</th>
+							<th>运行时间(ms)</th>
+							<th>precision</th>
+							<th>recall</th>
+							<th>f1</th>
+							<th>nDCG</th>
+							<th>coverage</th>
+							<th>novelty</th>
+							<th>diversity</th>
+							<th>topN</th>
+						</tr>
+					</thead>
+					<tbody>
+					{volist name='data' id='value'}
+						<tr id="{$value.id}">
+							<td><input type="checkbox" name="selected_record[]" value="{$value.id}"/></td>
+							<td class="remove"><a class="red" onclick="deletes({$value.id})" title="删除"><span class="glyphicon glyphicon-trash"></span></a></td>
+							<td>{$value.username}</td>
+							<td>{$value.createdat}</td>
+							<td>{$value.algorithm}</td>
+							<td>{$value.dataset}</td>
+							<td>{$value.param}</td>
+							<td>{$value.runtime}</td>
+							<td>{$value.precisions}</td>
+							<td>{$value.recall}</td>
+							<td>{$value.f1}</td>
+							<td>{$value.nDCG}</td>
+							<td>{$value.coverage}</td>
+							<td>{$value.novelty}</td>
+							<td>{$value.diversity}</td>
+							<td>{$value.topN}</td>
+						</tr>
+					{/volist}
+					</tbody>
+				</table>
+				{$data->render()}
 				横坐标：
 				<input id="algorithm" type="radio" checked="checked" value="algorithm" name="xaxis">algorithm</input>  
 				<input id="topn" type="radio" value="topN" name="xaxis">topn</input>
@@ -161,4 +163,15 @@
 	    var table=document.getElementsByTagName("table")[0];
 	    makeSortable(table);
 	}
+	// $(function(){
+	// 	$("table tr").click(function(){
+	// 		var input = $(this).find("input[type=checkbox]");//获取checkbox   
+	// 		//判断当前checkbox是否为选中状态
+	// 		if(input.is(":checked")){          
+	// 			input.attr("checked",false);
+	// 		}else{
+	// 			input.attr("checked",true);
+	// 		}
+	// 	}) 
+	// })
 </script>

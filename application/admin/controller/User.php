@@ -68,17 +68,6 @@ class User extends Controller{
 		return;
 	}
 
-	public function deletev(){
-		$id=$_POST['ids'];
-		if(Db::execute('delete from search where id='.$id)){
-
-			return (int)$id;
-		}
-
-		return;
-		
-	}
-
 	public function deletea(){
 		$id=$_POST['ids'];
 		$algname=Db::table('algorithm')->where('algid',$id)->value('algname');
@@ -294,9 +283,11 @@ class User extends Controller{
 	public function drawchart(){
 		$xname = $_POST['xaxis'];
 		$yname = $_POST['yaxis'];
+		$rid_array = $_POST['selected_record'];
+		$sql_str = join(",",$rid_array);
 
-		$xdata = Db::query('select '.$xname.' from search order by '.$xname);
-		$ydata = Db::query('select '.$yname.' from search order by '.$xname);
+		$xdata = Db::query('select '.$xname.' from record where id in('.$sql_str.') order by '.$xname);
+		$ydata = Db::query('select '.$yname.' from record where id in('.$sql_str.') order by '.$xname);
 		
 
 		foreach ($xdata as $key => $value) {
@@ -349,9 +340,7 @@ class User extends Controller{
 		$field = $filed_content;
 		$content = $content_content;
 		$content = $content.'%';
-		$data = Db::table('record')->whereLike($field,$content)->paginate(6);
-		Db::execute('drop view search');
-		Db::execute("create view search as (select * from record where $field LIKE '$content')");
+		$data = Db::table('record')->whereLike($field,$content)->paginate(8);
 		return $this->fetch('',['data'=>$data]);
 	}
 
