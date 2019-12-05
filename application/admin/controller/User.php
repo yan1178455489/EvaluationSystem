@@ -239,7 +239,7 @@ class User extends Controller{
 						continue;
 					}
 					$items[$eid] = 1; 
-					$novelty += log((1+$max_k)/(1+$participate_num[$eid]),2)/log($i+2,2);
+					$novelty += (1+$participate_num[$eid])/(1+$max_k)/log($i+2,2);
 					if(in_array($eid, $test[$uid])){
 						$hits++;
 						$DCG += log($i+1,2);
@@ -249,6 +249,7 @@ class User extends Controller{
 				$recall += count($test[$uid]);
 			}
 			$novelty = $novelty/$u_num/$topN;
+			$novelty = 1-$novelty;
 			$precision = $hits/$precision;
 			$recall = $hits/$recall;
 			$nDCG = $DCG/($iDCG * $u_num);

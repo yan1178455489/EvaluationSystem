@@ -40,16 +40,16 @@
 	<!-- 面版 -->
 	<div class="panel panel-default">
 		<form action="{:url('user/setpara')}" method="post">
-		<input type="hidden" name="alg" value="{$_GET['id']}" />	
-		{volist name='datasets' id='value'}
-		<input type="radio" checked="checked" name="dataset" value="{$value}" />
-		{$value}
-		{/volist}
-		<br />
-		<br />
-		<input type="submit" value="设置参数" class="btn btn-success">
+			<input type="hidden" name="alg" value="{$_GET['id']}" />	
+			{volist name='datasets' id='value'}
+			<input type="radio" checked="checked" name="dataset" value="{$value}" />
+			{$value}
+			{/volist}
+			<br />
+			<br />
+			<input type="submit" value="设置参数" class="btn btn-success">
+			<button class="btn btn-danger"><a onclick="deletes({$alg.algid})" title="删除">删除算法</a></button>
 		</form>
-		<button class="btn btn-danger"><a onclick="deletes({$alg.algid})" title="删除">删除算法</a></button>
 	</div>
 </div>
 

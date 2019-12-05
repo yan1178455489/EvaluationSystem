@@ -8,20 +8,56 @@
 
 	<!-- 面版 -->
 	<div class="panel panel-default">
-		<form action="{:url('preprocess/gen_group')}" method="post">
-			<select name="datasets" id="datasets">
-				{volist name='datasets' id='value'}
-					<option value="{$value.id}">{$value.name}</option>
-				{/volist}
-			</select>
-			<select name="files" id="files">
-				{volist name='list1' id='value'}
-					<option value="{$value}">{$value}</option>
-				{/volist}
-			</select>
-			<br />
-			<br />
-			<input type="submit" value="开始处理" class="btn btn-success">
+		<form action="{:url('preprocess/process_gen_group')}" method="post">
+			<div class="form-group">
+				<label for="datasets">选择数据集</label>
+				<select class="form-control" name="datasets" id="datasets">
+					<option value="0">请选择</option>
+					{volist name='datasets' id='value'}
+						<option value="{$value.id}">{$value.name}</option>
+					{/volist}
+				</select>	
+			</div>
+			<div class="form-group">
+				<label for="files">选择社交关系文件:</label>
+				<select class="form-control" name="files" id="files">
+					<option value="0">请选择</option>
+					{volist name='list1' id='value'}
+						<option value="{$value}">{$value}</option>
+					{/volist}
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="group_strategy">群组生成策略</label>
+				<select class="form-control" name="group_strategy" id="group_strategy">
+					<option value="sim">相似度</option>
+					<option value="random">随机</option>
+					<option value="relation">社交关系</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="group_num">群组人数</label>
+				<select class="form-control" name="group_num" id="group_num">
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="sim_type">相似度类型</label>
+				<select class="form-control" name="sim_type" id="sim_type">
+					<option value="cos">余弦</option>
+					<option value="pearson">pearson</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="sim_value">相似度阈值</label>
+				<input class="form-control" type="text" name="sim_value">
+			</div>
+			<div class="form-group">
+				<input type="submit" value="开始处理" class="btn btn-success">
+			</div>
 		</form>
 	</div>
 </div>

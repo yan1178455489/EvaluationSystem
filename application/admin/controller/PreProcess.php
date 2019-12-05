@@ -30,7 +30,7 @@ class Preprocess extends Controller{
 		$list = explode(',',$files[0]);
 		return $list;
 	}
-	// id重新编号
+	// 返回id重新编号页面
 	public function process_renumber(){
 		$dataset = $_POST['datasets'];
 		echo $dataset;
@@ -39,6 +39,18 @@ class Preprocess extends Controller{
 		}
 		$this->success('处理成功', 'Index/homepage');
 	}
+	// 返回生成群组页面
+	public function gen_group(){
+		$datasets = Db::table('dataset')->select();
+		$files = Db::table('dataset')->where("id",$datasets[0]['id'])->column('name');
+
+		return $this->fetch("",['datasets'=>$datasets,'list1'=>$files]);
+	}
+	// 处理生成群组逻辑
+	public function process_gen_group(){
+
+	}
+	// 处理id重新编号逻辑
 	public function process_meetup(){
 		$event_dict = array();
 		$group_dict = array();
