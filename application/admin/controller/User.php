@@ -83,7 +83,7 @@ class User extends Controller{
 		return;
 		
 	}
-
+	// 跳转到设置参数页面
 	public function setpara(){
 		//dump($_POST['dataset']);
 		$file_path = $_POST['alg'].".txt";

@@ -24,7 +24,6 @@ class Preprocess extends Controller{
 	}
 	// 返回数据集对应文件
 	public function get_files(){
-
 		$id = $_GET['id'];
 		$files = Db::table('dataset')->where('id',$id)->column('files');
 		$list = explode(',',$files[0]);
@@ -33,7 +32,6 @@ class Preprocess extends Controller{
 	// 返回id重新编号页面
 	public function process_renumber(){
 		$dataset = $_POST['datasets'];
-		echo $dataset;
 		if ($dataset=="meetup_ch") {
 			$this->process_meetup();	
 		}
@@ -46,9 +44,56 @@ class Preprocess extends Controller{
 
 		return $this->fetch("",['datasets'=>$datasets,'list1'=>$files]);
 	}
+	// 深度优先遍历活动参与者hash表
+	public function dfs($event_participant, $estart, $ustart, $group_size, $groups, $group){
+		if(count($group)==$group_size){
+			$gr = $group;
+			array_push($groups, $gr);
+			return;
+		}
+		if(!array_key_exists($estart, $event_participant)
+		||$ustart>=count($event_participant[$estart])){
+			return;
+		}
+		array_push($group, $event_participant[$estart][$ustart]);
+		$this->dfs($event_participant, $estart, $ustart+1, $group_size, $groups, $group);
+		array_pop($group);
+	}
 	// 处理生成群组逻辑
 	public function process_gen_group(){
+		$id = $_POST['datasets'];
+		$group_strategy = $_POST['group_strategy'];
+		$group_size = (int)$_POST['group_size'];
+		$result_name = $_POST['result_name'];
 
+		$dataset = Db::table('dataset')->where("id", $id)->column('name');
+		$dataset_name = $dataset[0];
+		$test_file = fopen($dataset_name.'\test.csv', "r") or die("Unable to open file!");
+		// 构建活动参与者hash表
+		$event_participant = array();
+		$groups = array();
+		$group = array();
+		$min = 0;
+		while($line=fgetcsv($test_file)){
+			$uid = $line[0];
+			$eid = $line[1];
+			// $min = min($min, (int)$eid);
+			$event_participant[$eid][] = $uid;
+		}
+		if($group_strategy=='random'){
+			foreach($event_participant as $event=>$participants){
+				$this->dfs($event_participant, $event, 0, $group_size, $groups, $group);
+			}
+		} elseif($group_strategy=='relation'){
+
+		}
+		$groups_file = fopen($dataset_name.'\\'.$result_name, 'w') or die("Unable to write group file");
+		foreach($groups as $key0=>$group){
+			$group_str = join(",", $group);
+			fwrite($groups_file, $groups_str."\r\n");
+		}
+		fclose($groups_file);
+		// $this->success('生成群组成功', 'Index/homepage');
 	}
 	// 处理id重新编号逻辑
 	public function process_meetup(){

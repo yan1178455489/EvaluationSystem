@@ -1,7 +1,7 @@
 K=50
 alpha=0.05
 lambda=0.01
-topN=10
+topN=5
 
 train=train.csv
 test=test.csv

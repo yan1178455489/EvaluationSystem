@@ -30,14 +30,14 @@
 			<div class="form-group">
 				<label for="group_strategy">群组生成策略</label>
 				<select class="form-control" name="group_strategy" id="group_strategy">
-					<option value="sim">相似度</option>
 					<option value="random">随机</option>
+					<option value="sim">相似度</option>
 					<option value="relation">社交关系</option>
 				</select>
 			</div>
 			<div class="form-group">
-				<label for="group_num">群组人数</label>
-				<select class="form-control" name="group_num" id="group_num">
+				<label for="group_size">群组人数</label>
+				<select class="form-control" name="group_size" id="group_size">
 					<option value="2">2</option>
 					<option value="3">3</option>
 					<option value="4">4</option>
@@ -54,6 +54,10 @@
 			<div class="form-group">
 				<label for="sim_value">相似度阈值</label>
 				<input class="form-control" type="text" name="sim_value">
+			</div>
+			<div class="form-group">
+				<label for="result_name">生成结果文件名</label>
+				<input class="form-control" type="text" name="result_name">
 			</div>
 			<div class="form-group">
 				<input type="submit" value="开始处理" class="btn btn-success">
