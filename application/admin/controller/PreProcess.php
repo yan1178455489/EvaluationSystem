@@ -61,6 +61,35 @@ class Preprocess extends Controller{
 		$this->dfs($participants, $ustart+1, $group_size, $groups_file, $group);
 		return;
 	}
+	// 社交关系深度遍历
+	public function dfs_relation($participants, $ustart, $group_size, $groups_file, $group, $user_friend){
+		if(count($group)>=$group_size){
+			$group_str = "";
+			$group_str = join(",", $group);
+			fwrite($groups_file, $group_str."\r\n");
+			return;
+		}
+		if($ustart>=count($participants)){
+			return;
+		}
+		if(count($group)>0){
+			$no_friend = TRUE;
+			foreach($group as $key=>$mem){
+				if(array_key_exists($mem, $user_friend)&&in_array($participants[$ustart], $user_friend[$mem])){
+					$no_friend = FALSE;
+					break;
+				}
+			}
+			if($no_friend){
+				return;
+			}
+		}
+		array_push($group, $participants[$ustart]);
+		$this->dfs_relation($participants, $ustart+1, $group_size, $groups_file, $group, $user_friend);
+		array_pop($group);
+		$this->dfs_relation($participants, $ustart+1, $group_size, $groups_file, $group, $user_friend);
+		return;
+	}
 	// 处理生成群组逻辑
 	public function process_gen_group(){
 		$id = $_POST['datasets'];
@@ -93,12 +122,19 @@ class Preprocess extends Controller{
 			}
 		} elseif($group_strategy=='relation'){
 			$relation_name = $_POST['relation_file'];
-
+			$user_friend = array();
+			$relation_file = fopen($dataset_name.'\\'.$relation_name, 'r');
+			while($line=fgetcsv($relation_file)){
+				$uid = $line[0];
+				$fid = $line[1];
+				$user_friend[$uid][] = $fid;
+				$user_friend[$fid][] = $uid;
+			}
 			foreach($event_participant as $event=>$participants){
 				if(count($participants)<$group_size){
 					continue;
 				}
-				$this->dfs_relation($participants, 0, $group_size, $groups_file, $group);
+				$this->dfs_relation($participants, 0, $group_size, $groups_file, $group, $user_friend);
 			}
 		}
 		fclose($groups_file);

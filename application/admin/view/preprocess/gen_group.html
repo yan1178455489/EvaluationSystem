@@ -83,7 +83,7 @@
 		});
 	});
 	function success(data){
-		$("#files").empty();
+		$("#relation_file").empty();
 		var count = data.length;
 		console.log(data);
 		console.log(count);
@@ -91,7 +91,7 @@
 		for (var i = 0; i < count; i++) {
 			b += "<option value='"+data[i]+"'>"+data[i]+"</option>";
 		}
-		$("#files").append(b);
+		$("#relation_file").append(b);
 	}
 	function error(){
 		alert("获取数据集文件失败！");
