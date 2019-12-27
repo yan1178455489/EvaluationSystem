@@ -136,6 +136,8 @@ class Preprocess extends Controller{
 				}
 				$this->dfs_relation($participants, 0, $group_size, $groups_file, $group, $user_friend);
 			}
+		} else {
+			
 		}
 		fclose($groups_file);
 		$this->success('生成群组成功', 'Index/homepage');

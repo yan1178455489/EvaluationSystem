@@ -250,8 +250,10 @@ class User extends Controller{
 			}
 			$novelty = $novelty/$u_num/$topN;
 			$novelty = 1-$novelty;
-			$precision = $hits/$precision;
-			$recall = $hits/$recall;
+			if($recall>0){
+				$precision = $hits/$precision;
+				$recall = $hits/$recall;
+			}
 			$nDCG = $DCG/($iDCG * $u_num);
 			$coverage = count($items)/$i_num;
 			$f1 = 2*$precision*$recall/($precision+$recall);
