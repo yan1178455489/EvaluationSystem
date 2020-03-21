@@ -75,7 +75,9 @@ class Upload extends Controller
          } 
 		
 		$data = array(
-			'name'=>$data_name
+			'name'=>$data_name,
+			'username'=>$_POST['username'],
+			'type'=>$_POST['type']
 		);
 		Db::table('algorithm')->insert($data);
 

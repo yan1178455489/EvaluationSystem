@@ -19,13 +19,12 @@ class User extends Controller{
 	public function add(){
 		return $this->fetch();
 	}
-
+	// 添加算法到数据库
 	public function do_add(){
 		$alg = Db::table('algorithm')->where('algname',$_POST['algname'])->find();
 		if (!empty($alg)) {
 			$this->error('算法名已存在');
 		}
-
 		$alg_file = request()->file('alg');
 		$config = request()->file('config');
 	    // 移动到框架应用根目录/public/ 目录下
@@ -46,6 +45,7 @@ class User extends Controller{
 		}
 		$data = array(
 			'algname'=>$_POST['algname'],
+			'username'=>$_POST['username'],
 			'reference'=>$_POST['reference'],
 			'dataset'=>$datasets,
 			'algtype'=>$_POST['algtype'],
@@ -58,20 +58,26 @@ class User extends Controller{
 		$this->success('上传成功', 'Index/homepage');
 	}
 	
-	// 删除
+	// 删除record
 	public function delete(){
-		$id=$_POST['ids'];
-		if(Db::table('record')->delete($id)){
-
+		$id = $_POST['ids'];
+		$login_name = $_POST['username'];
+		$db_username=Db::table('record')->where('id',$id)->value('username');
+		if($login_name==$db_username){
+			Db::table('record')->delete($id);
 			return (int)$id;
 		}
 		return;
 	}
 
+	// delete algorithm
 	public function deletea(){
 		$id=$_POST['ids'];
 		$algname=Db::table('algorithm')->where('algid',$id)->value('algname');
-		if(Db::table('algorithm')->delete($id)){
+		$login_name = $_POST['username'];
+		$db_username=Db::table('algorithm')->where('algid',$id)->value('username');
+		if($login_name==$db_username){
+			Db::table('algorithm')->delete($id)
 			$filename = "./".$algname.".jar"; 
 			unlink($filename); //删除文件 
 
@@ -229,6 +235,7 @@ class User extends Controller{
 			foreach ($participate_num as $key => $value) {
 				$max_k = max($max_k, $value);
 			}
+			$items = array();
 			foreach($recommend_map as $uid => $list){	
 				if (!array_key_exists($uid, $cand_users)) {
 					continue;
@@ -250,13 +257,14 @@ class User extends Controller{
 			}
 			$novelty = $novelty/$u_num/$topN;
 			$novelty = 1-$novelty;
+			$f1 = 0;
 			if($recall>0){
 				$precision = $hits/$precision;
 				$recall = $hits/$recall;
+				$f1 = 2*$precision*$recall/($precision+$recall);
 			}
 			$nDCG = $DCG/($iDCG * $u_num);
 			$coverage = count($items)/$i_num;
-			$f1 = 2*$precision*$recall/($precision+$recall);
 			$data=['username'=>$_POST['username'],'createdat'=>date("Y-m-d H:i:s",time()),'algorithm'=>$_POST['alg'],'dataset'=>$_POST['dataset'],'runtime'=>$runtime,
 			'precisions'=>$precision,'recall'=>$recall,'f1'=>$f1,'nDCG'=>$nDCG,'coverage'=>$coverage,'diversity'=>$diversity,'novelty'=>$novelty,'topN'=>$param['topN']];
 			$param_json = json_encode($param);

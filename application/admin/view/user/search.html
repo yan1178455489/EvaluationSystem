@@ -104,7 +104,7 @@
 				url:'delete',
 				success:success,
 				error:error,
-				data:{ids:id},
+				data:{ids:id,username:"{$Think.session.user.username}"},
 				type:'POST',
 				dataType:'text',
 			});
@@ -112,7 +112,11 @@
 	}
 
 	function success(id){
-		$('#'+id).remove();
+		if(id==""){
+			alert('没有权限，删除失败！');
+		} else {
+			$('#'+id).remove();
+		}
 	}
 	function error(){
 		alert('删除失败！');
