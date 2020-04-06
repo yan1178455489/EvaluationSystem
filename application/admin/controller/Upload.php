@@ -3,6 +3,7 @@
 namespace app\admin\controller;
 
 // 导入类
+use think\Db;
 use think\Controller;
 use app\admin\model\Dataset;
 
@@ -30,12 +31,12 @@ class Upload extends Controller
 	    mkdir($dest,0777,true);
 
 	  }
-
+	  
 	  $zip=new \ZipArchive();
 
-	  if($zip->open($zipName, \ZIPARCHIVE::CREATE | \ZIPARCHIVE::OVERWRITE)){
+	  if($zip->open($zipName)===true){
 
-	    $zip->extractTo($dest);
+	    $zip->extractTo($dest."/");
 
 	    $zip->close();
 
@@ -55,31 +56,33 @@ class Upload extends Controller
 	}
 
 	public function do_upload_dataset(){
-		// 移动到框架应用根目录/public/ 目录下
-		if(request()->file('dataset')){
-			$data_file = request()->file('dataset');
-			$info = $data_file->move('./','');  
-		} else{
-			$this->error('文件为空');
-		}
-		$file_name = $_FILES['dataset']['name'];
-		$array = explode('.',$file_name);
-		$data_name = $array[0];
-		$dataset = Dataset::where('name',$data_name)->select();
+		$dataset = Dataset::where('name',$_POST['dataset_name'])->select();
 		if (!empty($dataset)) {
 			$this->error('数据集名已存在');
 		}
-
-        if (!$this->unzip_file($file_name, './'.$data_name)) {
-         	$this->error('数据集已存在');
-         } 
+		// 获取绝对路径
+		$path = getcwd().'/';
+		// 定义压缩包要保存的路径
+		$filepath= $path.'upload_dataset/';
+		// 定义解压后文件要保持的路径
+		$unzip_path = $path.$_POST['dataset_name'];
+		// 移动到框架应用根目录/public/ 目录下
+		$data_file = request()->file('dataset');
+		$data_file->move($filepath,'');  
+		$file_name = $_FILES['dataset']['name'];
+		// 解压
+        if (!$this->unzip_file($filepath.$file_name, $unzip_path)) {
+			var_dump($Hhh);
+         	$this->error('解压失败');
+        } 
 		
 		$data = array(
-			'name'=>$data_name,
-			'username'=>$_POST['username'],
-			'type'=>$_POST['type']
+			'username'=>session('user.username'),
+			'name'=>$_POST['dataset_name'],
+			'type'=>$_POST['type'],
+			'create_time'=>date("Y-m-d H:i:s",time())
 		);
-		Db::table('algorithm')->insert($data);
+		Db::table('dataset')->insert($data);
 
 		$this->success('上传成功', 'Index/homepage');
 	}

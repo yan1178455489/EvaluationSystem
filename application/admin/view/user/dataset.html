@@ -8,9 +8,18 @@
 <div class="col-md-10">
 	
 	<ol class="breadcrumb">
+		<li class="active"><b>上传人</b></li>
+	</ol>
+	<!-- 面版 -->
+	<div class="panel panel-default">
+		<ul>
+			<li class="active">{$alg.username}</li>
+		</ul>
+	</div>
+
+	<ol class="breadcrumb">
 		<li class="active"><b>参考文献</b></li>
 	</ol>
-
 	<!-- 面版 -->
 	<div class="panel panel-default">
 		<ul>
@@ -18,19 +27,6 @@
 			{$alg.reference}
 			</li>
 		</ul>
-		<!-- <div class="panel-heading">
-			<button class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> 批量删除</button>
-			<a href="add.html" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> 添加管理员</a>
-			
-			<p class="pull-right tots" >共有 10 条数据</p>
-			<form action="" class="form-inline pull-right">
-				<div class="form-group">
-					<input type="text" name="" class="form-control" placeholder="请输入你要搜索的内容" id="">
-				</div>
-				
-				<input type="submit" value="搜索" class="btn btn-success">
-			</form>
-		</div> -->
 	</div>
 
 	<ol class="breadcrumb">
@@ -66,7 +62,7 @@
 				url:'deletea',
 				success:success,
 				error:error,
-				data:{ids:id,username:"{$Think.session.user.username}"},
+				data:{ids:id},
 				type:'POST',
 				dataType:'text',
 			});

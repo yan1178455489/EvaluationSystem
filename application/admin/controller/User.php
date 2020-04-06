@@ -45,7 +45,7 @@ class User extends Controller{
 		}
 		$data = array(
 			'algname'=>$_POST['algname'],
-			'username'=>$_POST['username'],
+			'username'=>session('user.username'),
 			'reference'=>$_POST['reference'],
 			'dataset'=>$datasets,
 			'algtype'=>$_POST['algtype'],
@@ -61,7 +61,7 @@ class User extends Controller{
 	// 删除record
 	public function delete(){
 		$id = $_POST['ids'];
-		$login_name = $_POST['username'];
+		$login_name = session('user.username');
 		$db_username=Db::table('record')->where('id',$id)->value('username');
 		if($login_name==$db_username){
 			Db::table('record')->delete($id);
@@ -74,10 +74,10 @@ class User extends Controller{
 	public function deletea(){
 		$id=$_POST['ids'];
 		$algname=Db::table('algorithm')->where('algid',$id)->value('algname');
-		$login_name = $_POST['username'];
+		$login_name = session('user.username');
 		$db_username=Db::table('algorithm')->where('algid',$id)->value('username');
 		if($login_name==$db_username){
-			Db::table('algorithm')->delete($id)
+			Db::table('algorithm')->delete($id);
 			$filename = "./".$algname.".jar"; 
 			unlink($filename); //删除文件 
 
@@ -265,14 +265,14 @@ class User extends Controller{
 			}
 			$nDCG = $DCG/($iDCG * $u_num);
 			$coverage = count($items)/$i_num;
-			$data=['username'=>$_POST['username'],'createdat'=>date("Y-m-d H:i:s",time()),'algorithm'=>$_POST['alg'],'dataset'=>$_POST['dataset'],'runtime'=>$runtime,
+			$data=['username'=>session('user.username'),'createdat'=>date("Y-m-d H:i:s",time()),'algorithm'=>$_POST['alg'],'dataset'=>$_POST['dataset'],'runtime'=>$runtime,
 			'precisions'=>$precision,'recall'=>$recall,'f1'=>$f1,'nDCG'=>$nDCG,'coverage'=>$coverage,'diversity'=>$diversity,'novelty'=>$novelty,'topN'=>$param['topN']];
 			$param_json = json_encode($param);
 			$data["param"] = $param_json;
 			Db::table('record')->insert($data);
 		}
 		else{
-			$data=['username'=>$_POST['username'],'createdat'=>date("Y-m-d H:i:s",time()),'algorithm'=>$_POST['alg'],
+			$data=['username'=>session('user.username'),'createdat'=>date("Y-m-d H:i:s",time()),'algorithm'=>$_POST['alg'],
 			'dataset'=>$_POST['dataset'],'runtime'=>$runtime,'topN'=>$param['topN']];
 			$results = fopen($datafile['results'], "r");
 			$line = fgets($results);
