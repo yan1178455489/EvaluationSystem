@@ -44,8 +44,9 @@
 			<br />
 			<br />
 			<input type="submit" value="设置参数" class="btn btn-success">
-			<button class="btn btn-danger"><a onclick="deletes({$alg.algid})" title="删除">删除算法</a></button>
 		</form>
+		<br>
+		<button class="btn btn-danger"><a onclick="deletes({$alg.algid})" title="删除">删除算法</a></button>
 	</div>
 </div>
 
@@ -63,8 +64,7 @@
 				success:success,
 				error:error,
 				data:{ids:id},
-				type:'POST',
-				dataType:'text',
+				type:'POST'
 			});
 		}
 	}
