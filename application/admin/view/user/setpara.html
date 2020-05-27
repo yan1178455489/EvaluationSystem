@@ -7,12 +7,11 @@
 		<ol class="breadcrumb">
 			<b>配置文件参数设置</b>
 		</ol>
-		<form action="{:url('user/run')}" method="post" >
+		<form action="{:url('evaluate/run')}" method="post" >
 			<div align="left">
 				<input type="hidden" name="alg" value="{$alg}" />
 				<input type="hidden" name="dataset" value="{$dataset}" />
 				<textarea name="config" style="width:400px;height:250px;">{$config}</textarea>
-				<!-- topn: <input type="text" name="topn" value="10"> -->
 				<br />
 				<br />
 			</div>

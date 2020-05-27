@@ -13,7 +13,7 @@ $datasets=Db::table('dataset')->column("name");
 	<div class="panel panel-default">
 		
 		<div class="panel-body">
-			<form action="{:url('admin/user/do_add')}" enctype="multipart/form-data" method="post">
+			<form action="{:url('admin/upload/do_upload_alg')}" enctype="multipart/form-data" method="post">
 
 				<div class="form-group">
 					算法文件：<input type="file" name="alg">	

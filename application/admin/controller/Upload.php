@@ -86,4 +86,43 @@ class Upload extends Controller
 
 		$this->success('上传成功', 'Index/homepage');
 	}
+
+	// 上传算法到数据库
+	public function do_upload_alg(){
+		$alg = Db::table('algorithm')->where('algname',$_POST['algname'])->find();
+		if (!empty($alg)) {
+			$this->error('算法名已存在');
+		}
+		$alg_file = request()->file('alg');
+		$config = request()->file('config');
+	    // 移动到框架应用根目录/public/ 目录下
+		$string = strrev($_FILES['alg']['name']);
+        $array = explode('.',$string);
+        $array[0] = strrev($array[0]);
+	    $info = $alg_file->move('./','');   
+	    $info = $config->move('./','');   
+		$dataset = $_POST['dataset'];
+		// 拼接数据集字段
+		$datasets = "";
+		$n = count($dataset);
+		if ($n>0) {
+			for ($i=0; $i < $n-1; $i++) { 
+				$datasets = $datasets.$dataset[$i].",";
+			}
+			$datasets = $datasets.$dataset[$n-1];
+		}
+		$data = array(
+			'algname'=>$_POST['algname'],
+			'username'=>session('user.username'),
+			'reference'=>$_POST['reference'],
+			'dataset'=>$datasets,
+			'algtype'=>$_POST['algtype'],
+			'need_computed'=>$_POST['need_computed'],
+			'filetype'=>$array[0],
+			'create_time'=>date("Y-m-d H:i:s",time())
+		);
+		Db::table('algorithm')->insert($data);
+
+		$this->success('上传成功', 'Index/homepage');
+	}
 }
