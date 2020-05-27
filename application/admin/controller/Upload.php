@@ -87,6 +87,11 @@ class Upload extends Controller
 		$this->success('上传成功', 'Index/homepage');
 	}
 
+	// 访问上传算法页面
+	public function upload_alg(){
+		return $this->fetch();
+	}
+
 	// 上传算法到数据库
 	public function do_upload_alg(){
 		$alg = Db::table('algorithm')->where('algname',$_POST['algname'])->find();

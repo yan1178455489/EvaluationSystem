@@ -15,10 +15,6 @@ class User extends Controller{
 	public function dataset(){
 		return $this->fetch();
 	}
-	// 访问上传算法页面
-	public function add(){
-		return $this->fetch();
-	}
 	
 	// 删除record
 	public function delete(){
@@ -38,9 +34,10 @@ class User extends Controller{
 		$algname=Db::table('algorithm')->where('algid',$id)->value('algname');
 		$login_name = session('user.username');
 		$db_username=Db::table('algorithm')->where('algid',$id)->value('username');
+		$file_type=Db::table('algorithm')->where('algid',$id)->value('filetype');
 		if($login_name==$db_username){
 			Db::table('algorithm')->delete($id);
-			$filename = "./".$algname.".jar"; 
+			$filename = "./".$algname.".".$file_type; 
 			unlink($filename); //删除文件 
 
 			$filename = "./".$algname.".txt"; 
@@ -66,13 +63,7 @@ class User extends Controller{
 	public function instructions(){
 		return $this->fetch();
 	}
-	// // 查看历史记录方法
-	// public function history(){
-	// 	$data = Db::table('record')->paginate(6);
 
-	// 	$this->assign('data',$data);
-	// 	return $this->fetch();
-	// }
 	//搜索实验记录
 	public function search(){
 		$filed_content = "username";
