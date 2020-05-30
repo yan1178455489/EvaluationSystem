@@ -86,7 +86,7 @@
 				<input id="novelty" type="radio" value="novelty" name="yaxis">novelty</input> 
 				<input id="diversity" type="radio" value="diversity" name="yaxis">diversity</input>  
 				<br>
-				<input type="submit" value="生成柱状图" class="btn btn-success">
+				<input id="genGraph" type="submit" value="生成柱状图" class="btn btn-success" disabled="true">
 			</form>
 		</div>
 	</div>
@@ -168,15 +168,16 @@
 	    var table=document.getElementsByTagName("table")[0];
 	    makeSortable(table);
 	}
-	// $(function(){
-	// 	$("table tr").click(function(){
-	// 		var input = $(this).find("input[type=checkbox]");//获取checkbox   
-	// 		//判断当前checkbox是否为选中状态
-	// 		if(input.is(":checked")){          
-	// 			input.attr("checked",false);
-	// 		}else{
-	// 			input.attr("checked",true);
-	// 		}
-	// 	}) 
-	// })
+	$(function(){
+		$("table tr").click(function(){
+			var input = $(this).find("input[type=checkbox]");//获取checkbox   
+			//判断当前checkbox是否为选中状态
+			if(input.is(":checked")){          
+				$("#genGraph").removeAttr("disabled");
+				console.log("选中了");
+			}else{
+				$("#genGraph").attr("disabled","true");
+			}
+		}) 
+	})
 </script>
