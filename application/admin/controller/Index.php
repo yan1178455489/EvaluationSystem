@@ -15,12 +15,6 @@ class Index extends Controller{
 		return $this->fetch();
 	}
 
-
-	public function homepage(){
-
-		return $this->fetch();
-	}
-
 	public function register(){
 		return $this->fetch();
 	}
@@ -45,7 +39,8 @@ class Index extends Controller{
 		}
 		$data = array(
 			'username'=>$username,
-			'password'=>md5($password)
+			'password'=>md5($password),
+			'auth'=>'normal'
 		);
 		$result = Db::table('user')->insert($data);
 		if(!$result){
@@ -62,9 +57,9 @@ class Index extends Controller{
 			$this->error('账号或密码错误');# code...
 		}
 
-		session('user.userid',$user['userid']);
+		session('user.userid',$user['id']);
 		session('user.username',$user['username']);
-		$this->success('登录成功','Index/homepage');
+		$this->success('登录成功','User/homepage');
 	}
 
 	public function logout(){

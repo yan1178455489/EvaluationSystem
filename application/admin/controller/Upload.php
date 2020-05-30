@@ -6,12 +6,13 @@ namespace app\admin\controller;
 use think\Db;
 use think\Controller;
 use app\admin\model\Dataset;
-
+// 导入登陆拦截器
+use app\admin\controller\CheckLogin;
 
 /**
 * 压缩和解压文件
 */
-class Upload extends Controller
+class Upload extends CheckLogin
 {
 	
 	function unzip_file($zipName, $dest){
@@ -84,7 +85,7 @@ class Upload extends Controller
 		);
 		Db::table('dataset')->insert($data);
 
-		$this->success('上传成功', 'Index/homepage');
+		$this->success('上传成功', 'User/homepage');
 	}
 
 	// 访问上传算法页面
@@ -128,6 +129,6 @@ class Upload extends Controller
 		);
 		Db::table('algorithm')->insert($data);
 
-		$this->success('上传成功', 'Index/homepage');
+		$this->success('上传成功', 'User/homepage');
 	}
 }

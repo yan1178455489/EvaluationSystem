@@ -6,8 +6,10 @@ namespace app\admin\controller;
 use think\Controller;
 // 导入Db类
 use think\Db;
+// 导入登陆拦截器
+use app\admin\controller\CheckLogin;
 
-class Evaluate extends Controller{
+class Evaluate extends CheckLogin{
     public function run(){
         $alg = Db::table('algorithm')->where('algname',$_POST['alg'])->find();
         $need_computed = (int)$alg['need_computed'];

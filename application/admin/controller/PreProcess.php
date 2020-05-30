@@ -6,11 +6,11 @@ namespace app\admin\controller;
 use think\Controller;
 use think\Db;
 use think\Paginator;
+// 导入登陆拦截器
+use app\admin\controller\CheckLogin;
 
-/**
-* 压缩和解压文件
-*/
-class Preprocess extends Controller{
+
+class Preprocess extends CheckLogin{
 	// 返回选择处理方式页面
 	public function index(){
 		return $this->fetch();
@@ -35,7 +35,7 @@ class Preprocess extends Controller{
 		if ($dataset=="meetup_ch") {
 			$this->process_meetup();	
 		}
-		$this->success('处理成功', 'Index/homepage');
+		$this->success('处理成功', 'User/homepage');
 	}
 	// 返回生成群组页面
 	public function gen_group(){
@@ -140,7 +140,7 @@ class Preprocess extends Controller{
 			
 		}
 		fclose($groups_file);
-		$this->success('生成群组成功', 'Index/homepage');
+		$this->success('生成群组成功', 'User/homepage');
 	}
 	// 处理id重新编号逻辑
 	public function process_meetup(){

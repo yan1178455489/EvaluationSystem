@@ -8,8 +8,14 @@ use think\Controller;
 use think\Db;
 use think\Upload;
 use think\Paginator;
+// 导入登陆拦截器
+use app\admin\controller\CheckLogin;
 
-class User extends Controller{
+class User extends CheckLogin{
+
+	public function homepage(){
+		return $this->fetch();
+	}
 
 	// 访问选择数据集页面
 	public function dataset(){
@@ -20,8 +26,9 @@ class User extends Controller{
 	public function delete(){
 		$id = $_POST['ids'];
 		$login_name = session('user.username');
-		$db_username=Db::table('record')->where('id',$id)->value('username');
-		if($login_name==$db_username){
+		$db_username= Db::table('record')->where('id',$id)->value('username');
+		$auth = Db::table('user')->where('username',$login_name)->value('auth');
+		if($login_name==$db_username||$auth=='admin'){
 			Db::table('record')->delete($id);
 			return (int)$id;
 		}
@@ -35,7 +42,8 @@ class User extends Controller{
 		$login_name = session('user.username');
 		$db_username=Db::table('algorithm')->where('algid',$id)->value('username');
 		$file_type=Db::table('algorithm')->where('algid',$id)->value('filetype');
-		if($login_name==$db_username){
+		$auth = Db::table('user')->where('username',$login_name)->value('auth');
+		if($login_name==$db_username||$auth=='admin'){
 			Db::table('algorithm')->delete($id);
 			$filename = "./".$algname.".".$file_type; 
 			unlink($filename); //删除文件 
